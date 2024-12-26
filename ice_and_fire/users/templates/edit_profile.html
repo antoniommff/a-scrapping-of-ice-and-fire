@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Mi Perfil</title>
+{% endblock title %}
+
+{% block content %}
+<section class="py-4 py-xl-5">
+    <div class="container">
+        <h2 style="text-align: center;"><strong>Mi Perfil</strong></h2>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="fw-bold">Nombre</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="surname" class="fw-bold">Apellidos</label>
+                            <input type="text" class="form-control" id="surname" name="surname" value="{{ user.surname }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="fw-bold">Correo electrónico</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="username" class="fw-bold">Nombre de usuario</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="fw-bold">Nueva contraseña</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password_confirmation" class="fw-bold">Confirmar nueva contraseña</label>
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

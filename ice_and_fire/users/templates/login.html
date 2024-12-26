@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Inicio de Sesión</title>
+{% endblock title %}
+
+{% block content %}
+<section class="py-4 py-xl-5">
+    <div class="container">
+        <div class="container">
+            <h2 style="text-align: center;"><strong>Inicio de Sesión</strong></h2>
+            <p class="w-lg-50" style="text-align: center;">
+                Regístrate usando tu correo o nombre de usuario y contraseña. Si no tienes cuenta, puedes crear una <a href="{% url 'register' %}" class="fw-bold text-decoration-underline" style="font-weight: 900;">aquí</a>.
+            </p>
+            {% if messages %}
+                    <div class="alert alert-danger" role="alert">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-6 col-xl-4">
+                <div class="card mb-5">
+                    <div class="card-body d-flex flex-column align-items-center">
+                        <form class="text-center w-100" method="post">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4">
+                                    <i class="bi bi-person" style="font-size: 4rem; color: #003366;"></i>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.dni.id_for_label }}" class="form-label"><strong>Nombre de usuario o correo electrónico:</strong></label>
+                                {{ form.email_username }}
+                                {% if form.email_username.errors %}
+                                    <div class="text-danger">{{ form.email_username.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label"><strong>Contraseña:</strong></label>
+                                {{ form.password }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger">{{ form.password.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <button class="btn btn-primary d-block w-100" type="submit">Iniciar Sesión</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3 text-center" role="alert">
+                    <strong>Si no consigue iniciar sesión, mande un correo electrónico a antmacfer1@alum.us.es con el asunto "[AII PASSWORD]"</strong>.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
