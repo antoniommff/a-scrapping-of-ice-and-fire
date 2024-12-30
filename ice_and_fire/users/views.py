@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib import messages
@@ -30,11 +29,12 @@ def login(request):
                 user = authenticate(request, username=username,
                                     password=password)
 
-            user = CustomUser.objects.get(username=username)
-            if user is not None:
-                auth_login(request, user)
-                return redirect('/')
-            else:
+            try:
+                user = CustomUser.objects.get(username=username)
+                if user is not None:
+                    auth_login(request, user)
+                    return redirect('/')
+            except CustomUser.DoesNotExist:
                 messages.error(
                     request, "Credenciales inválidas. Inténtalo de nuevo."
                 )
@@ -114,9 +114,9 @@ def edit_profile(request):
 
 @login_required
 def delete_account(request):
+    user = get_object_or_404(CustomUser, username=request.user.username)
     if request.method == 'POST':
-        user = request.user
         user.delete()
         logout(request)
-        return JsonResponse({'success': True})
-    return JsonResponse({'success': False})
+        return redirect('login')
+    return render(request, 'delete_account.html', {'user': user})

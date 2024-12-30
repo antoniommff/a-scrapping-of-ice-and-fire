@@ -62,3 +62,11 @@ nav {
     padding: 10px 20px;
     transition: transform 0.3s ease;
 }
+
+body {
+    font-family: 'Roboto', sans-serif; /* Roboto como fuente principal, sans-serif como respaldo */
+}
+
+h1, h2, h3 {
+    font-family: 'Roboto', sans-serif;
+}

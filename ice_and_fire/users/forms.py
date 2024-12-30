@@ -8,14 +8,15 @@ class LoginForm(forms.Form):
         max_length=255,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Correo electrónico o nombre de usuario',
+                'placeholder': 'example@mail.com',
                 'class': 'form-control'
             }
         ),
-        label="Correo electrónico o nombre de usuario"
+        label="Email o nombre de usuario"
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'type': 'password',
+        widget=forms.PasswordInput(attrs={'placeholder': '1234',
+                                          'type': 'password',
                                           'class': 'form-control'}),
         label="Contraseña"
     )
@@ -74,19 +75,21 @@ class RegisterForm(forms.Form):
         max_length=255,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Nombre de usuario',
+                'placeholder': 'Username',
                 'class': 'form-control'
             }
         ),
-        label="Nombre de usuario"
+        label="Username"
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'type': 'password',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña',
+                                          'type': 'password',
                                           'class': 'form-control'}),
         label="Fecha de nacimiento"
     )
     password_confirmation = forms.CharField(
-        widget=forms.PasswordInput(attrs={'type': 'password',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña',
+                                          'type': 'password',
                                           'class': 'form-control'}),
         label="Confirmar contraseña"
     )
