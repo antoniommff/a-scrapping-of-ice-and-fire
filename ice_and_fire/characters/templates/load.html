@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Cargar datos</title>
+{% endblock title %}
+
+{% block content %}
+<section class="py-4 d-flex align-items-center justify-content-center" style="min-height: 50vh;">
+    <div class="container">
+        <div class="row d-flex justify-content-center text-center">
+            <div class="col-md-6 col-lg-6 d-flex flex-column justify-content-center" style="gap: 20px;">
+                
+                <div class="row justify-content-center">
+                    <h1 class="mb-4">
+                        <strong>CARGAR O ACTUALIZAR DATOS</strong>
+                    </h1>
+                    <p class="mb-4">
+                        Se recagarán los datos de la página con nueva información de las casa, personajes y libros que se hayan encontrado en la <strong>Ciudadela</strong>.
+                    </p>
+                    <p style="text-align: center; margin-top: 10px; font-weight: bold; color: #EA5629;">¡Cuidado! Esta carga es lenta y puede tardar hasta 3 minutos.</p>
+                </div>
+
+                <div class="row justify-content-center">
+                  <form id="data-load-form" action="{% url 'data_load' %}" method="POST">
+                      {% csrf_token %}
+                      <button type="submit" id="load-button" class="m2 btn btn-sm px-2 py-1">
+                        <div class="logo">
+                          <span>CARGAR</span>
+                        </div>
+                    </button>
+                  </form>
+                </div>
+                
+                <div class="row justify-content-center">
+                  <div id="loading-screen" class="loader" style="display: none;">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+                
+                <div id="progress-container" style="display: none; width: 100%; margin-top: 20px;">
+                  <div id="progress-bar" style="width: 0%; height: 20px; background-color: #118E6C;"></div>
+                </div>
+                <p id="progress-message" style="text-align: center; margin-top: 10px; font-size: 1.5em; font-weight: bold; color: #118E6C;"></p>
+              
+                <script>
+                  document.querySelector('form').addEventListener('submit', function(event) {
+                      // Evitar que el formulario se envíe de manera tradicional
+                      event.preventDefault();
+                  
+                      // Mostrar el loading screen
+                      document.getElementById('loading-screen').style.display = 'grid';
+                      
+                      // Deshabilitar el botón para evitar envíos múltiples
+                      const button = document.querySelector('form button');
+                      button.disabled = true;
+                  
+                      // Crear un objeto FormData para enviar los datos del formulario
+                      const formData = new FormData(this);
+                  
+                      // Usar fetch para enviar los datos con AJAX
+                      fetch(this.action, {
+                          method: 'POST',
+                          body: formData,
+                          headers: {
+                              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value // CSRF Token
+                          }
+                      })
+                      .then(response => {
+                        if (response.ok) {
+                            const updateProgress = () => {
+                                fetch("{% url 'get_progress' %}")
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        const percentage = Math.round((data.current / data.total) * 100);
+                                        document.getElementById('progress-bar').style.width = percentage + "%";
+                                        document.getElementById('progress-message').innerText = data.message;
+                
+                                        if (data.current < data.total) {
+                                            setTimeout(updateProgress, 500);
+                                        } else {
+                                            document.getElementById('progress-message').innerText = "¡Carga completada!";
+                                        }
+                                    })
+                                    .catch(err => console.error("Error al obtener progreso:", err));
+                            };
+                            updateProgress();
+                        } else {
+                            console.error("Error al iniciar la carga de datos");
+                        }
+                      })
+                      .then(response => response.json()) // Asegúrate de que el servidor responde con JSON si es necesario
+                      .then(data => {
+                          // Ocultar el loading screen cuando la respuesta haya llegado
+                          document.getElementById('loading-screen').style.display = 'none';
+                          
+                          // Habilitar el botón nuevamente
+                          button.disabled = false;
+                      
+                          // Mostrar el mensaje de éxito
+                          document.getElementById('success-message').style.display = 'block';
+                      })
+                      .catch(error => {
+                          // En caso de error, ocultar el loading screen y habilitar el botón
+                          document.getElementById('loading-screen').style.display = 'none';
+                          button.disabled = false;
+                      
+                          // Opcional: mostrar un mensaje de error
+                          console.error('Error:', error);
+                      });
+                  });
+                </script>
+            
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .m2 {
+      position: relative;
+      width: 30vmin; /* Increased width */
+      height: 30vmin; /* Increased height */
+      background: linear-gradient(135deg, #1e1e24 10%, #050505 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      animation: gradient-shift 5s ease-in-out infinite;
+      background-size: 150% 150%;
+      margin: 0 auto; /* Center the button */
+    }
+
+    .m2 .logo {
+      display: inline-block;
+      vertical-align: baseline;
+      user-select: none;
+      font-size: 5vmin; /* Decreased font size */
+      color: white;
+      background-image: linear-gradient(to right, #626262, #fff);
+      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      font-weight: bold;
+    }
+
+    .m2 .logo svg {
+      margin-right: -1vmin;
+      width: 6vmin; /* Decreased SVG size */
+      height: 6vmin; /* Decreased SVG size */
+    }
+
+    .m2::before,
+    .m2::after {
+      --size: 5px; /* Reduced glow size */
+      content: "";
+      position: absolute;
+      top: calc(var(--size) / -2);
+      left: calc(var(--size) / -2);
+      width: calc(100% + var(--size));
+      height: calc(100% + var(--size));
+      background: radial-gradient(circle at 0 0, hsl(27deg 93% 60%), transparent),
+        radial-gradient(circle at 100% 0, #00a6ff, transparent),
+        radial-gradient(circle at 0 100%, #EA5629, transparent),
+        radial-gradient(circle at 100% 100%, #6500ff, transparent);
+    }
+
+    .m2::after {
+      --size: 2px; /* Reduced inner glow size */
+      z-index: -1;
+    }
+
+    .m2::before {
+      --size: 10px; /* Reduced outer glow size */
+      z-index: -2;
+      filter: blur(2vmin); /* Reduced blur */
+      animation: blur-animation 3s ease-in-out alternate infinite; /* Faster blur animation */
+    }
+
+    .m2:hover {
+      background-color: #fff;
+      color: #474C50;
+      border: 2px solid #474C50;
+      box-shadow: 5px 5px 0px #474C50;
+    }
+
+    .m2:active {
+      background-color: #0000;
+      box-shadow: none;
+      transform: translateY(4px);
+    }
+
+    /* Faster blur animation */
+    @keyframes blur-animation {
+      to {
+        filter: blur(3vmin);
+        transform: scale(1.05);
+      }
+    }
+
+    /* Faster gradient animation */
+    @keyframes gradient-shift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Loader */ 
+    .loader {
+      --color: #a5a5b0;
+      --size: 70px;
+      width: var(--size);
+      height: var(--size);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .loader span {
+      width: 100%;
+      height: 100%;
+      background-color: var(--color);
+      animation: keyframes-blink 0.6s alternate infinite linear;
+    }
+
+    .loader span:nth-child(1) {
+      animation-delay: 0ms;
+    }
+
+    .loader span:nth-child(2) {
+      animation-delay: 200ms;
+    }
+
+    .loader span:nth-child(3) {
+      animation-delay: 300ms;
+    }
+
+    .loader span:nth-child(4) {
+      animation-delay: 400ms;
+    }
+
+    .loader span:nth-child(5) {
+      animation-delay: 500ms;
+    }
+
+    .loader span:nth-child(6) {
+      animation-delay: 600ms;
+    }
+
+    @keyframes keyframes-blink {
+      0% {
+        opacity: 0.3;
+        transform: scale(0.5) rotate(5deg);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+
+
+</style>
+
+{% endblock content %}

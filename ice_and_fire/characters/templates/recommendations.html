@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>Recomendaciones: para evita spoilres</title>
+{% endblock title %}
+
+{% block content %}
+
+    <h1>Recomendaciones para {{ user.username }}</h1>
+
+    <h2>Libros Leídos</h2>
+    <ul>
+        {% for book in books %}
+        <li>{{ book.title }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Casas Relacionadas</h2>
+    <ul>
+        {% for house in houses %}
+        <li>{{ house.name }} - Lema: {{ house.words }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock content %}

@@ -85,18 +85,21 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
+@csrf_exempt
 def logout_view(request):
     logout(request)
     return redirect('login')
 
 
 @login_required
+@csrf_exempt
 def profile(request):
     user = request.user
     return render(request, 'profile.html', {'user': user})
 
 
 @login_required
+@csrf_exempt
 def edit_profile(request):
     user = get_object_or_404(CustomUser, username=request.user.username)
 
@@ -113,6 +116,7 @@ def edit_profile(request):
 
 
 @login_required
+@csrf_exempt
 def delete_account(request):
     user = get_object_or_404(CustomUser, username=request.user.username)
     if request.method == 'POST':
