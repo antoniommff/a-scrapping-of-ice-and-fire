@@ -9,10 +9,12 @@ from whoosh.index import create_in
 from whoosh.fields import Schema, TEXT, KEYWORD
 import os
 import ssl
+from datetime import datetime
 
 
 path = "db"
-dirindex = "index"
+dirindex1 = "index1"
+dirindex2 = "index2"
 ice_and_fire_books = ["Juego De Tronos", "Choque De Reyes", "Tormenta De Espadas", "Festín De Cuervos",
                       "Danza De Dragones", "Vientos De Invierno", "Fuego Y Sangre", "El Mundo De Hielo Y Fuego",
                       "El Caballero De Los Siete Reinos", "Los Hijos Del Dragón", "La Espada Leal",
@@ -35,6 +37,10 @@ def populate():
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
         getattr(ssl, '_create_unverified_context', None)):
     ssl._create_default_https_context = ssl._create_unverified_context
+
+
+def clean_text(element):
+    return " ".join(element.stripped_strings)
 
 
 def extract_house_data():
@@ -127,11 +133,11 @@ def populateHouses():
         books=KEYWORD(stored=True, commas=True)
     )
 
-    if os.path.exists(dirindex):
-        shutil.rmtree(dirindex)
-    os.mkdir(dirindex)
+    if os.path.exists(dirindex1):
+        shutil.rmtree(dirindex1)
+    os.mkdir(dirindex1)
 
-    ix1 = create_in(dirindex, schema=schema1)
+    ix1 = create_in(dirindex1, schema=schema1)
     writer1 = ix1.writer()
     i = 0
 
@@ -148,7 +154,8 @@ def populateHouses():
         url = links[i]
 
         coat_tag = aside.find('figure', class_='pi-item pi-image')
-        coat = coat_tag.a['href'] if coat_tag else None
+        no_coat = "https://static-00.iconduck.com/assets.00/image-not-found-01-icon-512x512-a8erytww.png"
+        coat = coat_tag.a['href'] if coat_tag else no_coat
 
         section = aside.find('section', class_='pi-group')
         words, place, lord, region, founder = None, None, None, None, None
@@ -171,7 +178,7 @@ def populateHouses():
 
         paragraphs = h.find('div', class_='mw-parser-output').find_all("p")
         for p in paragraphs:
-            possible_text = p.get_text(strip=True)
+            possible_text = clean_text(p)
             if possible_text:
                 text = possible_text
                 continue
@@ -231,6 +238,14 @@ def populateBooks():
         "Danza De Dragones": "/covers/5_a_dance_with_dragons.webp",
     }
 
+    ice_and_fire_dates = {
+        "Juego De Tronos": "1996-08-06",
+        "Choque De Reyes": "1998-11-16",
+        "Tormenta De Espadas": "2000-08-08",
+        "Festín De Cuervos": "2005-11-08",
+        "Danza De Dragones": "2011-07-12",
+    }
+
     for book in Book.objects.all():
 
         # Correct some errors of the original page
@@ -244,10 +259,11 @@ def populateBooks():
                 house.save()
                 Book.objects.filter(title=book.title).delete()
 
-        # Add cover to ice and fire saga books
+        # Add cover and date to ice and fire saga books
         if book.title in ice_and_fire_titles:
             book.is_ice_and_fire = True
             book.cover = ice_and_fire_titles[book.title]
+            book.date = datetime.strptime(ice_and_fire_dates[book.title], "%Y-%m-%d").date()
         else:
             book.cover = random.choice([
                 "/covers/the_citadel_1.webp",
@@ -275,14 +291,15 @@ def populateCharacters():
     schema2 = Schema(
         name=TEXT(stored=True),
         text=TEXT(stored=True),
+        house=TEXT(stored=True),
         books=KEYWORD(stored=True, commas=True)
     )
 
-    if os.path.exists(dirindex):
-        shutil.rmtree(dirindex)
-    os.mkdir(dirindex)
+    if os.path.exists(dirindex2):
+        shutil.rmtree(dirindex2)
+    os.mkdir(dirindex2)
 
-    ix2 = create_in(dirindex, schema=schema2)
+    ix2 = create_in(dirindex2, schema=schema2)
     writer2 = ix2.writer()
     i = 0
 
@@ -305,7 +322,6 @@ def populateCharacters():
                book_title != 'Trasfondo' and
                book_title != 'En La Obra' and
                not (book_title.endswith("Temporada"))):
-                print(book_title)
                 try:
                     book = Book.objects.get(title=book_title)
                     books.add(book)
@@ -315,26 +331,38 @@ def populateCharacters():
 
         texts = paragraphs.find_all("p")
         for p in texts:
-            possible_text = p.get_text(strip=True)
+            possible_text = clean_text(p)
             if possible_text:
                 text = possible_text
                 break
 
         photo_page = c[1]
-        photo = ""
+        photo = "https://static-00.iconduck.com/assets.00/image-not-found-01-icon-512x512-a8erytww.png"
         paragraphs = photo_page.find('div', class_='mw-parser-output')
-        infobox = photo_page.find('table', class_='infobox')
+        infobox = paragraphs.find('table', class_='infobox ib-character')
         if infobox:
-            photo = infobox.a['href']
+            infobox_image = infobox.find("td", class_="infobox-image")
+            if infobox_image:
+                img_tag = infobox_image.find("img")
+                if img_tag and 'src' in img_tag.attrs:
+                    photo = "https:" + img_tag['src']
 
         # Create character
         character = Character.objects.create(
             name=name, url=url, photo=photo
         )
         character.books.set(books)
+
+        last_name = name.split()[-1]
+        house = House.objects.filter(name__icontains=(" " + last_name))
+        if house and name != "Caminante Blanco":
+            character.house = house[0]
+            character.save()
+
         writer2.add_document(
             name=str(name),
             text=str(text),
+            house=str(house[0].name) if house else "Sin casa reconocida",
             books=str(", ".join(book_titles))
         )
         i += 1
@@ -348,6 +376,6 @@ def populateCharacters():
     # Populate index
     writer2.commit()
     # print("Fin de indexado", "Se han creado " + str(i) + " casas")
-    update_progress(i, i, "¡Carga completa!")
+    update_progress(462+i, 462+i, "¡Carga completa!")
 
     return (dict)

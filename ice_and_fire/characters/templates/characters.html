@@ -38,6 +38,17 @@
                     </option>
                     {% endfor %}
                 </select>
+
+                <select 
+                    class="form-control custom-select dropdown mx-3" 
+                    name="house">
+                    <option value="" {% if not request.GET.house %}selected{% endif %}>En todas las casas</option>
+                    {% for house in houses %}
+                    <option value="{{ house.name }}" {% if house.name == request.GET.house %}selected{% endif %}>
+                        {{ house.name }}
+                    </option>
+                    {% endfor %}
+                </select>
                 
                 <button class="comic-button-create btn-sm px-4 ml-3" type="submit">Buscar</button>
             </form>
@@ -45,7 +56,7 @@
             <div><br></div>
 
             <!-- Pagination (Top) -->
-            {% if page_obj is not None %}
+            {% if page_obj is not None or page_obj.paginator.count > 0 %}
             <div class="row justify-content-center mt-4">
                 <nav aria-label="Page navigation">
                     <ul class="pagination">
@@ -107,19 +118,24 @@
                     <strong> No hay datos cargados en el sistema actualmente :( </strong>
                 </p>
             {% endif %}
+            {% if page_obj.paginator.count == 0 %}
+                <p class="mb-4 alert alert-warning">
+                    <strong> No se ha encontrado resultados :( </strong>
+                </p>
+            {% endif %}
             <div class="row justify-content-center">
                 <div class="card-columns">
                     {% for character in page_obj %}
                     <div class="card">
                         <div class="card-img">
-                            <img src="{{ character.coat }}" alt="Coat of arms of {{ character.name }}" class="img-fluid" style="max-width: 100px; max-height: 100px;">
+                            <img src="{{ character.photo }}" 
+                                 alt="Image of {{ character.name }}" 
+                                 class="img-fluid" 
+                                 style="max-width: 150px; max-height: 150px; border-radius: 5%; box-shadow: 0 12 12px rgba(0, 0, 0, 1);">
                         </div>
                         <div class="card-title">{{ character.name }}</div>
-                        {% if character.words is not None %}
-                            <div class="card-subtitle">{{ character.words }}</div>
-                        {% endif %}
                         <div class="card-footer">
-                            <button class="btn" data-toggle="modal" data-target="#characterModal" onclick="showcharacterInfo('{{ character.name }}', '{{ character.words }}', '{{ character.region }}', '{{ character.coat }}', '{{ character.place }}', '{{ character.founder}}', '{{ character.lord}}', '{{ character.books}}')">
+                            <button class="btn" data-toggle="modal" data-target="#characterModal" onclick="showcharacterInfo('{{ character.name }}', '{{ character.photo }}', '{{ character.books }}', '{{ character.house }}')">
                                 <i class="fas fa-info-circle"></i>
                                 <span class="btn-label">Más Información</span>
                             </button>
@@ -136,7 +152,7 @@
             <div><br></div>
 
             <!-- Pagination (Down) -->
-            {% if page_obj is not None %}
+            {% if page_obj is not None or page_obj.paginator.count > 0 %}
             <div class="row justify-content-center mt-4">
                 <nav aria-label="Page navigation">
                     <ul class="pagination">
@@ -193,19 +209,20 @@
 <!-- Modal -->
 <div class="modal fade" id="characterModal" tabindex="-1" role="dialog" aria-labelledby="characterModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
+        <div class="modal-content card modal-card">
             <div class="modal-body">
                 <div id="modalContent"></div>
             </div>
             <div class="modal-footer d-flex justify-content-center">
-                <button type="button" class="comic-button-cancel btn-sm px-2 mx-2" data-dismiss="modal">Cerrar</button>
+                <a class="comic-button-cancel btn-sm px-2 mx-2" data-dismiss="modal" style="font-size: 14px;">Cerrar</a>
+                <a class="comic-button-create btn-sm px-2 mx-2" id="viewHouseButton" style="font-size: 14px;">Ver casa</a>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    function showcharacterInfo(name, words, region, coat, place, founder, lord, books) {
+    function showcharacterInfo(name, photo, books, house) {
         fetch(`/get_character_text/?name=${encodeURIComponent(name)}`)
             .then(response => {
                 if (!response.ok) {
@@ -216,34 +233,38 @@
             .then(data => {
                 const modalContent = `
                 <div class="container">
-                    <div class="row justify-content-center text-center mb-4">
-                        <div class="col-md-12">
-                            <img src="${coat}" alt="Coat of arms of ${name}" style="max-width: 250px; max-height: 250px;">
+                    <div class="row align-items-center">
+                        <!-- Foto y nombre a la izquierda -->
+                        <div class="col-md-4 d-flex flex-column align-items-center text-center">
+                            <img src=${photo}
+                                 alt="Image of ${name}" 
+                                 class="img-fluid" 
+                                 style="max-width: 300px; max-height: 300px; border-radius: 5%; box-shadow: 0 12 12px rgba(0, 0, 0, 1);">
                             <h2 class="text-uppercase"><strong>${name}</strong></h2>
-                            ${words !== "None" ? `<p class="h5"><em>${words}</em></p>` : ''}
                         </div>
-                    </div>
-                
-                    <div class="row">
+
+                        <!-- Datos a la derecha -->
                         <div class="col-md-8">
                             <p class="fs-7 text-justify"><em>${data.text || 'No disponible'}</em></p>
-                            ${data.books ? `
                             <hr>
                             <p class="fs-7 text-justify"><strong>Libros:</strong></p>
                             <p class="fs-7 text-justify">${data.books}</p>
-                            ` : ''}
-                        </div>
-                    
-                        <div class="col-md-4">
-                            ${region !== "None" ? `<p><strong>Región:</strong> ${region}</p>` : ''}
-                            ${place !== "None" ? `<p><strong>Lugar:</strong> ${place}</p>` : ''}
-                            ${lord !== "None" ? `<p><strong>Señor:</strong> ${lord}</p>` : ''}
-                            ${founder !== "None" ? `<p><strong>Fundador:</strong> ${founder}</p>` : ''}
+                            <hr>
+                            <p class="fs-7 text-justify"><strong>Familia / Linaje:</strong></p>
+                            <p class="fs-7 text-justify">${data.house}</p>
                         </div>
                     </div>
                 </div>
                 `;
                 document.getElementById('modalContent').innerHTML = modalContent;
+
+                const viewHouseButton = document.getElementById('viewHouseButton');
+                if (data.house != "Sin casa reconocida") {
+                    viewHouseButton.href = `/houses?q=${encodeURIComponent(data.house)}`;
+                    viewHouseButton.style.display = 'inline-block';
+                } else {
+                    viewHouseButton.style.display = 'none';
+                }
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
@@ -491,82 +512,92 @@
 
 
     /* Info Modal */ 
-    .modals-card {
-      width: 280px;
-      height: fit-content;
-      background-color: rgb(255, 250, 250);
-      border-radius: 10px;
-      border: 1px solid rgb(206, 206, 206);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 20px;
-      gap: 15px;
-      position: relative;
-      font-family: Arial, Helvetica, sans-serif;
-      box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.066), 0px 0px 10px rgba(0, 0, 0, 0.5);
-    }
+    .modal-content.card {
+    --font-color: #323232;
+    --font-color-sub: #666;
+    --bg-color: #fff;
+    --main-color: #323232;
+    --main-focus: #2d8cf0;
+    background-color: var(--bg-color);
+    border: 2px solid var(--main-color);
+    box-shadow: 4px 4px var(--main-color);
+    border-radius: 5px;
+    padding: 20px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
 
-    .modal-heading {
-      color: rgb(34, 34, 34);
-      font-weight: 800;
-    }
-    .modal-para {
-      font-size: 11px;
-      font-weight: 400;
-      color: rgb(51, 51, 51);
-    }
-    .button-wrapper {
-      width: 100%;
-      height: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    .modal-button {
-      width: 50%;
-      padding: 8px 0;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .accept {
-      background-color: rgb(34, 34, 34);
-      color: white;
-    }
-    .reject {
-      background-color: #ececec;
-      color: rgb(34, 34, 34);
-    }
-    .accept:hover {
-      background-color: rgb(0, 0, 0);
-    }
-    .reject:hover {
-      background-color: #ddd;
-    }
-    .exit-button {
-      position: absolute;
-      top: 17px;
-      right: 17px;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: transparent;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .exit-button:hover {
-      background-color: #ddd;
-      color: white;
-    }
-    .svgIconCross {
-      height: 10px;
-    }
+.modal-content .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-content .modal-footer {
+    background-color: var(--bg-color);
+}
+
+.modal-content .modal-footer .comic-button-cancel {
+    border: 2px solid var(--main-color);
+    box-shadow: 4px 4px var(--main-color);
+    background-color: var(--bg-color);
+    color: var(--main-color);
+    transition: all 0.3s;
+}
+
+.modal-content .modal-footer .comic-button-cancel:hover {
+    background-color: var(--main-color);
+    color: var(--bg-color);
+}
+
+.modal-content .modal-footer .comic-button-cancel:active {
+    transform: translateY(3px);
+}
+
+.modal-content.card.modal-card {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    --font-color: #323232;
+    --font-color-sub: #666;
+    --bg-color: #fff;
+    --main-color: #323232;
+    --main-focus: #2d8cf0;
+    background-color: var(--bg-color);
+    border: 2px solid var(--main-color);
+    box-shadow: 4px 4px var(--main-color);
+    border-radius: 5px;
+    padding: 20px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.modal-content .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-content .modal-footer {
+    background-color: var(--bg-color);
+}
+
+.modal-content .modal-footer .comic-button-cancel {
+    border: 2px solid var(--main-color);
+    box-shadow: 4px 4px var(--main-color);
+    background-color: var(--bg-color);
+    color: var(--main-color);
+    transition: all 0.3s;
+}
+
+.modal-content .modal-footer .comic-button-cancel:hover {
+    background-color: var(--main-color);
+    color: var(--bg-color);
+}
+
+.modal-content .modal-footer .comic-button-cancel:active {
+    transform: translateY(3px);
+}
+
 
     /* Dropdown */
     /* General styling */
