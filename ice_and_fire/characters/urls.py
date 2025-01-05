@@ -2,6 +2,8 @@ from django.urls import path
 from characters import views
 
 urlpatterns = [
+    path('', views.home, name='home'),
+
     path('data', views.data, name='data'),
     path('data_load', views.populateDatabase, name='data_load'),
     path('find', views.find, name='find'),

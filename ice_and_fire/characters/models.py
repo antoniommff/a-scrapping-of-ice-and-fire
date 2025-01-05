@@ -30,8 +30,12 @@ class House(models.Model):
 
 
 class Character(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, blank=False, null=False)
-    house = models.ForeignKey(House, on_delete=models.CASCADE)
+    url = models.URLField(max_length=256, blank=True, null=True)
+    photo = models.URLField(max_length=256, blank=True, null=True)
+    books = models.ManyToManyField(Book)
+    # house = models.ForeignKey(House, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

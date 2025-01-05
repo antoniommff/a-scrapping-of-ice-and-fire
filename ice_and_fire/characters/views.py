@@ -12,6 +12,12 @@ from django.contrib.admin.views.decorators import staff_member_required
 HOUSES_PER_PAGE = 24
 
 
+# Home
+def home(request):
+    book_list = Book.objects.filter(is_ice_and_fire=True)
+    return render(request, 'home.html', {'books': book_list})
+
+
 # Load data
 
 @staff_member_required
@@ -58,8 +64,8 @@ def characters(request):
 
 def houses(request):
     query = request.GET.get('q')
-    selected_books = request.GET.getlist('books')
-    if query or selected_books:
+    selected_book = request.GET.get('books')  # Ahora es una sola opción
+    if query or selected_book:
         ix = open_dir("index")
         with ix.searcher() as searcher:
             if query:
@@ -71,8 +77,8 @@ def houses(request):
                 house_list = House.objects.filter(name__in=house_names)
             else:
                 house_list = House.objects.all()
-            if selected_books:
-                house_list = house_list.filter(books__title__in=selected_books).distinct()
+            if selected_book:
+                house_list = house_list.filter(books__title=selected_book).distinct()
     else:
         house_list = House.objects.all().order_by('name')
 
@@ -80,7 +86,11 @@ def houses(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'houses.html', {'page_obj': page_obj, 'query': query, 'books': Book.objects.all()})
+    return render(request, 'houses.html', {
+        'page_obj': page_obj,
+        'query': query,
+        'books': Book.objects.all()
+    })
 
 
 def get_house_text_and_books(request):

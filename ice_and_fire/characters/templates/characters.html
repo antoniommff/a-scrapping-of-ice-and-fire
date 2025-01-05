@@ -2,8 +2,607 @@
 {% load static %}
 
 {% block title %}
-    <title>Todos personajes de la saga Canción de Hielo y Fuego</title>
+    <title>Personajes de la saga Canción de Hielo y Fuego</title>
 {% endblock title %}
 
 {% block content %}
+<section class="py-4 d-flex align-items-center justify-content-center" style="min-height: 50vh;">
+    <div class="container">
+        <div class="row d-flex justify-content-center text-center">
+            
+            <div class="row justify-content-center">
+                <h1 class="mb-4">
+                    <strong>PERSONAJES</strong> DE CANCIÓN DE HUELO Y FUEGO
+                </h1>
+                <p class="mb-4">
+                    <strong> Aquí podrás encontrar TODOS los personajes protagonistas de los libros de la saga CANCIÓN DE HIELO Y FUEGO.</strong>
+                </p>
+            </div>
+
+            <form action="{% url 'characters' %}" method="get" class="form-inline my-4 d-flex justify-content-center align-items-center">
+                <input 
+                    class="form-control search-bar mr-3" 
+                    type="search" 
+                    placeholder="Buscar personajes..." 
+                    aria-label="Buscar" 
+                    name="q" 
+                    value="{{ query|default_if_none:'' }}">
+                
+                <select 
+                    class="form-control custom-select dropdown mx-3" 
+                    name="books">
+                    <option value="" {% if not request.GET.books %}selected{% endif %}>En todos los libros</option>
+                    {% for book in books %}
+                    <option value="{{ book.title }}" {% if book.title == request.GET.books %}selected{% endif %}>
+                        {{ book.title }}
+                    </option>
+                    {% endfor %}
+                </select>
+                
+                <button class="comic-button-create btn-sm px-4 ml-3" type="submit">Buscar</button>
+            </form>
+
+            <div><br></div>
+
+            <!-- Pagination (Top) -->
+            {% if page_obj is not None %}
+            <div class="row justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item mx-6">
+                            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page=1" aria-label="First">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item mx-1">
+                            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&lsaquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled mx-2">
+                            <span class="page-link" aria-hidden="true">&laquo;</span>
+                        </li>
+                        <li class="page-item disabled mx-1">
+                            <span class="page-link" aria-hidden="true">&lsaquo;</span>
+                        </li>
+                        {% endif %}
+                    
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item mx-1 {% if page_obj.number == num %}active{% endif %}">
+                                <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item mx-1">
+                            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&rsaquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item mx-2">
+                            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled mx-1">
+                            <span class="page-link" aria-hidden="true">&rsaquo;</span>
+                        </li>
+                        <li class="page-item disabled mx-2">
+                            <span class="page-link" aria-hidden="true">&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+
+            <!-- Character list -->
+            {% if page_obj is None %}
+                <p class="mb-4 alert alert-warning">
+                    <strong> No hay datos cargados en el sistema actualmente :( </strong>
+                </p>
+            {% endif %}
+            <div class="row justify-content-center">
+                <div class="card-columns">
+                    {% for character in page_obj %}
+                    <div class="card">
+                        <div class="card-img">
+                            <img src="{{ character.coat }}" alt="Coat of arms of {{ character.name }}" class="img-fluid" style="max-width: 100px; max-height: 100px;">
+                        </div>
+                        <div class="card-title">{{ character.name }}</div>
+                        {% if character.words is not None %}
+                            <div class="card-subtitle">{{ character.words }}</div>
+                        {% endif %}
+                        <div class="card-footer">
+                            <button class="btn" data-toggle="modal" data-target="#characterModal" onclick="showcharacterInfo('{{ character.name }}', '{{ character.words }}', '{{ character.region }}', '{{ character.coat }}', '{{ character.place }}', '{{ character.founder}}', '{{ character.lord}}', '{{ character.books}}')">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="btn-label">Más Información</span>
+                            </button>
+                            <a href="{{ character.url }}" class="btn" target="_blank">
+                                <i class="fas fa-link" style="vertical-align: middle;"></i>
+                                <span class="btn-label">Enlace a la Wiki</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div><br></div>
+
+            <!-- Pagination (Down) -->
+            {% if page_obj is not None %}
+            <div class="row justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item mx-6">
+                            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page=1" aria-label="First">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item mx-1">
+                            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&lsaquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled mx-2">
+                            <span class="page-link" aria-hidden="true">&laquo;</span>
+                        </li>
+                        <li class="page-item disabled mx-1">
+                            <span class="page-link" aria-hidden="true">&lsaquo;</span>
+                        </li>
+                        {% endif %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item mx-1">
+                            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&rsaquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item mx-2">
+                            <a class="page-link" href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled mx-1">
+                            <span class="page-link" aria-hidden="true">&rsaquo;</span>
+                        </li>
+                        <li class="page-item disabled mx-2">
+                            <span class="page-link" aria-hidden="true">&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+
+                    
+        </div>
+    </div>
+</section>
+
+
+<!-- Modal -->
+<div class="modal fade" id="characterModal" tabindex="-1" role="dialog" aria-labelledby="characterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="modalContent"></div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="comic-button-cancel btn-sm px-2 mx-2" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showcharacterInfo(name, words, region, coat, place, founder, lord, books) {
+        fetch(`/get_character_text/?name=${encodeURIComponent(name)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const modalContent = `
+                <div class="container">
+                    <div class="row justify-content-center text-center mb-4">
+                        <div class="col-md-12">
+                            <img src="${coat}" alt="Coat of arms of ${name}" style="max-width: 250px; max-height: 250px;">
+                            <h2 class="text-uppercase"><strong>${name}</strong></h2>
+                            ${words !== "None" ? `<p class="h5"><em>${words}</em></p>` : ''}
+                        </div>
+                    </div>
+                
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p class="fs-7 text-justify"><em>${data.text || 'No disponible'}</em></p>
+                            ${data.books ? `
+                            <hr>
+                            <p class="fs-7 text-justify"><strong>Libros:</strong></p>
+                            <p class="fs-7 text-justify">${data.books}</p>
+                            ` : ''}
+                        </div>
+                    
+                        <div class="col-md-4">
+                            ${region !== "None" ? `<p><strong>Región:</strong> ${region}</p>` : ''}
+                            ${place !== "None" ? `<p><strong>Lugar:</strong> ${place}</p>` : ''}
+                            ${lord !== "None" ? `<p><strong>Señor:</strong> ${lord}</p>` : ''}
+                            ${founder !== "None" ? `<p><strong>Fundador:</strong> ${founder}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+                `;
+                document.getElementById('modalContent').innerHTML = modalContent;
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                document.getElementById('modalContent').innerHTML = '<p class="card-subtitle"><strong>Error al cargar la información de la casa.</strong></p>';
+            });
+    }
+</script>
+
+
+<style>
+
+    /* Buttons */
+    .btn {
+        outline: 0 !important;
+        border: 2px solid #000 !important;
+        width: auto;
+        height: auto;
+        background-color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        transition: all ease-in-out 0.3s;
+        cursor: pointer;
+        padding: 10px 20px;
+        box-shadow: 4px 4px #000;
+        position: relative;
+    }
+
+    .btn-label {
+        display: none;
+        position: absolute;
+        bottom: -50px;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        white-space: nowrap;
+        background-color: #000;
+        box-shadow: 4px 4px #000;
+    }
+
+    .btn:hover .btn-label {
+        display: block;
+    }
+
+    /* Pagination */
+    .pagination .page-item .page-link {
+        border: 2px solid #000;
+        border-radius: 5px;
+        box-shadow: 4px 4px #000;
+        color: #000;
+        transition: all 0.3s;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #000;
+        color: #fff;
+        border-color: #000;
+    }
+
+    .pagination .page-item .page-link:hover {
+        background-color: #000;
+        color: #fff;
+    }
+
+    /* character Card */
+    .card {
+      --font-color: #323232;
+      --font-color-sub: #666;
+      --bg-color: #fff;
+      --main-color: #323232;
+      --main-focus: #2d8cf0;
+      width: 230px;
+      height: 300px;
+      background: var(--bg-color);
+      border: 2px solid var(--main-color);
+      box-shadow: 4px 4px var(--main-color);
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 20px;
+      gap: 10px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      flex: 1 1 calc(25% - 20px);
+      box-sizing: border-box;
+    }
+
+    .card:last-child {
+      justify-content: flex-end;
+    }
+
+    .card-img {
+        /* clear and add new css */
+      transition: all 0.5s;
+      display: flex;
+      justify-content: center;
+    }
+
+    .card-img .img {
+     /* delete */
+      transform: scale(1);
+      position: relative;
+      box-sizing: border-box;
+      width: 100px;
+      height: 100px;
+      border-top-left-radius: 80px 50px;
+      border-top-right-radius: 80px 50px;
+      border: 2px solid black;
+      background-color: #228b22;
+      background-image: linear-gradient(to top,transparent 10px,rgba(0,0,0,0.3) 10px,rgba(0,0,0,0.3) 13px,transparent 13px);
+    }
+
+    .card-img .img::before {
+     /* delete */
+      content: '';
+      position: absolute;
+      width: 65px;
+      height: 110px;
+      margin-left: -32.5px;
+      left: 50%;
+      bottom: -4px;
+      background-repeat: no-repeat;
+      background-image: radial-gradient(ellipse at center,rgba(0,0,0,0.7) 30%,transparent 30%),linear-gradient(to top,transparent 17px,rgba(0,0,0,0.3) 17px,rgba(0,0,0,0.3) 20px,transparent 20px),linear-gradient(to right,black 2px,transparent 2px),linear-gradient(to left,black 2px,transparent 2px),linear-gradient(to top,black 2px,#228b22 2px);
+      background-size: 60% 10%,100% 100%,100% 65%,100% 65%,100% 50%;
+      background-position: center 3px,center bottom,center bottom,center bottom,center bottom;
+      border-radius: 0 0 4px 4px;
+      z-index: 2;
+    }
+
+    .card-img .img::after {
+     /* delete */
+      content: '';
+      position: absolute;
+      box-sizing: border-box;
+      width: 28px;
+      height: 28px;
+      margin-left: -14px;
+      left: 50%;
+      top: -13px;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(80deg,#ffc0cb 45%,transparent 45%),linear-gradient(-175deg,#ffc0cb 45%,transparent 45%),linear-gradient(80deg,rgba(0,0,0,0.2) 51%,rgba(0,0,0,0) 51%),linear-gradient(-175deg,rgba(0,0,0,0.2) 51%,rgba(0,0,0,0) 51%),radial-gradient(circle at center,#ffa6b6 45%,rgba(0,0,0,0.2) 45%,rgba(0,0,0,0.2) 52%,rgba(0,0,0,0) 52%),linear-gradient(45deg,rgba(0,0,0,0) 48%,rgba(0,0,0,0.2) 48%,rgba(0,0,0,0.2) 52%,rgba(0,0,0,0) 52%),linear-gradient(65deg,rgba(0,0,0,0) 48%,rgba(0,0,0,0.2) 48%,rgba(0,0,0,0.2) 52%,rgba(0,0,0,0) 52%),linear-gradient(22deg,rgba(0,0,0,0) 48%,rgba(0,0,0,0.2) 48%,rgba(0,0,0,0.2) 54%,rgba(0,0,0,0) 54%);
+      background-size: 100% 100%,100% 100%,100% 100%,100% 75%,100% 95%,100% 60%;
+      background-position: center center;
+      border-top-left-radius: 120px;
+      border-top-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 70px;
+      border-top: 2px solid black;
+      border-left: 2px solid black;
+      transform: rotate(45deg);
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--font-color);
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--font-color-sub);
+    }
+
+    .card-divider {
+      width: 100%;
+      border: 1px solid var(--main-color);
+      border-radius: 50px;
+    }
+
+    .card-footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+    }
+
+    .card-btn {
+      height: 35px;
+      background: var(--bg-color);
+      border: 2px solid var(--main-color);
+      border-radius: 5px;
+      padding: 0 15px;
+      transition: all 0.3s;
+      box-shadow: 4px 4px var(--main-color);
+      position: relative;
+    }
+
+    .card-btn svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--main-color);
+      transition: all 0.3s;
+    }
+
+    .card-img:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-btn:hover {
+      border: 2px solid var(--main-focus);
+    }
+
+    .card-btn:hover svg {
+      fill: var(--main-focus);
+    }
+
+    .card-btn:hover .btn-label {
+        display: block;
+    }
+
+    .card-btn:active {
+      transform: translateY(3px);
+    }
+
+    .card-columns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    @media (max-width: 1200px) {
+        .card {
+            flex: 1 1 calc(33.33% - 20px);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .card {
+            flex: 1 1 calc(50% - 20px);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .card {
+            flex: 1 1 calc(100% - 20px);
+        }
+    }
+
+
+    /* Info Modal */ 
+    .modals-card {
+      width: 280px;
+      height: fit-content;
+      background-color: rgb(255, 250, 250);
+      border-radius: 10px;
+      border: 1px solid rgb(206, 206, 206);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 20px;
+      gap: 15px;
+      position: relative;
+      font-family: Arial, Helvetica, sans-serif;
+      box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.066), 0px 0px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-heading {
+      color: rgb(34, 34, 34);
+      font-weight: 800;
+    }
+    .modal-para {
+      font-size: 11px;
+      font-weight: 400;
+      color: rgb(51, 51, 51);
+    }
+    .button-wrapper {
+      width: 100%;
+      height: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .modal-button {
+      width: 50%;
+      padding: 8px 0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .accept {
+      background-color: rgb(34, 34, 34);
+      color: white;
+    }
+    .reject {
+      background-color: #ececec;
+      color: rgb(34, 34, 34);
+    }
+    .accept:hover {
+      background-color: rgb(0, 0, 0);
+    }
+    .reject:hover {
+      background-color: #ddd;
+    }
+    .exit-button {
+      position: absolute;
+      top: 17px;
+      right: 17px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .exit-button:hover {
+      background-color: #ddd;
+      color: white;
+    }
+    .svgIconCross {
+      height: 10px;
+    }
+
+    /* Dropdown */
+    /* General styling */
+    form.form-inline {
+        display: flex;
+        align-items: center; /* Ensures vertical alignment */
+        gap: 10px; /* Adds consistent spacing between elements */
+    }
+
+    /* Styling for the search bar */
+    .search-bar {
+        max-width: 300px; /* Adjusts the maximum size */
+        height: 40px; /* Consistent height with dropdown and button */
+        padding: 5px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+    }
+
+    /* Styling for the dropdown */
+    .custom-select.dropdown {
+        flex: 1.5; /* Takes more space than the search bar */
+        max-width: 400px; /* Adjusts the maximum size */
+        height: 40px;
+        padding: 5px 10px;
+        font-size: 14px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+    }
+
+    button.comic-button-create {
+        margin-top: 10px; /* Ajusta la posición vertical */
+        font-size: 14px;
+        border-radius: 5px;
+    }
+
+
+</style>
 {% endblock %}
