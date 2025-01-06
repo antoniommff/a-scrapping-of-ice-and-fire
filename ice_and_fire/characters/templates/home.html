@@ -23,81 +23,79 @@
 <section class="py-4 py-xl-5">
     <div class="container">
         
-        <div class="container py-4 py-xl-5">
-            <div class="row mb-5">
-                <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h1> <strong>EL ÍNDICE DE HIELO Y FUEGO</strong> </h1>
-                    <hr style="width: 60%; border-top: 2px solid #000; margin: 20px auto;">
-                    <img src="{% static 'images/logo3.png' %}" alt="Logo" class="img-fluid mb-4 zoom-on-hover" style="max-width: 300px; max-height: 300px;">
-                    <p class="w-lg-50"> Trabajo para la asignatura de acceso inteligente a la información por Antonio Macías Ferrera</p>
-                </div>
-            </div>
+        <div class="col-md-8 col-xl-6 text-center mx-auto">
+            <img src="{% static 'images/logo3.png' %}" alt="Logo" class="img-fluid mb-4 zoom-on-hover" style="max-width: 300px; max-height: 300px;">
+            <h1> <strong>EL ÍNDICE DE HIELO Y FUEGO</strong> </h1>
+            <br>
+            <h3 style="color: #4e4b4b;"><em><strong> Encuentra información sobre personajes y casas </strong></em></h3>
+            <h3 style="color: #4e4b4b;"><em><strong> ¡SIN PELIGRO DE SPOILERS! </strong></em></h3>
+            <br><hr>
         </div>
 
+        <div class="row justify-content-center position-relative" style="height: 600px;">
+            <div class="scroll-container">
+                {% for book in books %}
+                {% if book.is_ice_and_fire %}
+                <div class="book large-book" style="background-image: url('/media/backgrounds{{ book.cover }}'); background-size: cover;">
+                    <div class="col text-center">
+                        <p>{{ book.title }}</p>
+                        <a class="comic-button-create" href="/houses?q=&books={{ book.title|urlencode }}" style="font-size: 12px; padding: 5px 10px;">Buscar Casas</a>
+                        <br><br>
+                        <a class="comic-button-edit" href="/characters?q=&books={{ book.title|urlencode }}" style="font-size: 12px; padding: 5px 10px;">Buscar Personajes</a>
+                    </div>
+                    <div class="cover">
+                        {% if book.cover %}
+                        <img src="/media{{ book.cover }}" alt="{{ book.title }}">
+                        {% else %}
+                        <p>No disponible</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <button class="btn" onclick="scrollToStart()" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%);">&#10094;</button>
+            <button class="btn" onclick="scrollRight()" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">&#10095;</button>
+            <br><hr>
+        </div>
+
+
+        <div class="col-md-8 col-xl-6 text-center mx-auto">
+            <br>
+            <h2 style="color: #4e4b4b;"> <strong> Inicia sesión para poder acceder a recomendaciones personalizadas </strong> </h2>
+            <br>
+        </div>
         {% if not user.is_authenticated %}
         <div class="mb-3 text-center">
             <div class="d-flex justify-content-center align-items-center gap-2">
-            <a class="comic-button-edit btn btn-sm px-2 py-1" href="{% url 'login' %}">
+            <a class="comic-button-edit" href="{% url 'login' %}">
                 Iniciar Sesión
             </a>
-            <a>O</a>
-            <a class="comic-button-create btn btn-sm px-2 py-1" href="{% url 'register' %}">
+            <br><a>O</a><br>
+            <a class="comic-button-create" href="{% url 'register' %}">
                 Registrarse
             </a>
             </div>
         </div>
         {% endif %}
 
-        <div class="container py-4 py-xl-5">
-            <div class="row mb-5">
-                <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h2> <strong> Encuentra iformación sobre personajes y casas </strong> </h2>
-                    <h1> <strong> ¡SIN PELIGRO DE SPOILERS! </strong> </h1>
-                </div>
-            </div>
-            <div><br></div>
-            <div class="row justify-content-center position-relative" style="height: 600px;">
-                <div class="scroll-container">
-                    {% for book in books %}
-                    {% if book.is_ice_and_fire %}
-                    <div class="book large-book" style="background-image: url('/media/backgrounds{{ book.cover }}'); background-size: cover;">
-                        <div class="col text-center">
-                            <p>{{ book.title }}</p>
-                            <a class="comic-button-create" href="/houses?q=&books={{ book.title|urlencode }}" style="font-size: 12px; padding: 5px 10px;">Buscar Casas</a>
-                            <br><br>
-                            <a class="comic-button-edit" href="/characters?q=&books={{ book.title|urlencode }}" style="font-size: 12px; padding: 5px 10px;">Buscar Personajes</a>
-                        </div>
-                        <div class="cover">
-                            {% if book.cover %}
-                            <img src="/media{{ book.cover }}" alt="{{ book.title }}">
-                            {% else %}
-                            <p>No disponible</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-                <button class="btn" onclick="scrollToStart()" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%);">&#10094;</button>
-                <button class="btn" onclick="scrollRight()" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">&#10095;</button>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="container py-4 py-xl-5">
-        <div class="row mb-5">
-            <div class="col-md-8 col-xl-6 text-center mx-auto">
-                <h1> <strong> ¡EXPLORA EL GRAN MAPA DE PONIENTE! </strong> </h1>
-            </div>
-        </div>
-    </div>
-
-    <div class="image-container">
-        <img class="zoom-image" src="{% static 'images/westeros.webp' %}" alt="Mapa de Poniente">
     </div>
     
 </section>
+
+
+<div class="container py-4 py-xl-5">
+    <div class="row mb-5">
+        <div class="col-md-8 col-xl-6 text-center mx-auto">
+            <h1> <strong> ¡EXPLORA EL GRAN MAPA DE PONIENTE! </strong> </h1>
+        </div>
+    </div>
+</div>
+
+<div class="image-container">
+    <img class="zoom-image" src="{% static 'images/westeros.webp' %}" alt="Mapa de Poniente">
+</div>
+<div><br><br></div>
 
 
 <script>
@@ -112,10 +110,10 @@
         let zoomFactor;
         if (scrollPosition <= halfHeight) {
             // Aumenta el zoom hasta la mitad del scroll
-            zoomFactor = 1 + (scrollPosition / halfHeight) * 0.5; // Máximo zoom de 1.5
+            zoomFactor = 1 + (scrollPosition / halfHeight) * 0.3; // Máximo zoom de 1.5
         } else {
             // Reduce el zoom después de la mitad
-            zoomFactor = 1.5 - ((scrollPosition - halfHeight) / halfHeight) * 0.5;
+            zoomFactor = 1.5 - ((scrollPosition - halfHeight) / halfHeight) * 0.3;
         }
 
         // Aplica el zoom a la imagen

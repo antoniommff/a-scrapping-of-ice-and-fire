@@ -48,18 +48,18 @@ class Character(models.Model):
 #     completed = models.BooleanField(default=False)
 
 
-class Score(models.Model):
-    SCORES = ((0, 'No favorito'), (1, 'Favorito'), (2, 'Guardado'))
+class Rating(models.Model):
+    RATINGS = ((0, 'No favorito'), (1, 'Favorito'), (2, 'Guardado'))
     userId = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     characterId = models.ForeignKey(Character, on_delete=models.CASCADE)
-    score = models.IntegerField(
+    rating = models.IntegerField(
         verbose_name='Puntuación',
         validators=[MinValueValidator(0), MaxValueValidator(2)],
-        choices=SCORES
+        choices=RATINGS
     )
 
     def __str__(self):
-        return (str(self.score))
+        return (str(self.rating))
 
     class Meta:
         ordering = ('characterId', 'userId', )

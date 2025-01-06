@@ -2,8 +2,10 @@
 import random
 import shutil
 import requests
+
+from users.models import CustomUser
 from .progress import update_progress
-from .models import Character, House, Book
+from .models import Character, House, Book, Rating
 from bs4 import BeautifulSoup
 from whoosh.index import create_in
 from whoosh.fields import Schema, TEXT, KEYWORD
@@ -12,6 +14,7 @@ import ssl
 from datetime import datetime
 
 
+sample_data_path = "sample_data"
 path = "db"
 dirindex1 = "index1"
 dirindex2 = "index2"
@@ -26,12 +29,14 @@ ice_and_fire_books = ["Juego De Tronos", "Choque De Reyes", "Tormenta De Espadas
 def populate():
     from django.core.management import call_command
     call_command('migrate')
+
+    populateUsers(sample_data_path)
+
     populateHouses()
     populateBooks()
     populateCharacters()
-    # u = populateUsers()
-    # m = populateMovies()
-    # populateRatings(u, m)
+
+    populateRatings(sample_data_path)
 
 
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
@@ -84,7 +89,7 @@ def extract_character_data():
     soups = []
     links = []
     i = 462
-    total = 462 + 55
+    total = 462 + 55 + 60
 
     response1 = requests.get(page)
     soup1 = BeautifulSoup(response1.text, 'html.parser')
@@ -106,6 +111,27 @@ def extract_character_data():
         update_progress(i + 1, total, f"Cargando personaje {i + 1}/{total}")
 
     return soups, links
+
+
+def populateUsers(file_path):
+    # Delete tables
+    CustomUser.objects.exclude(username='admin').delete()
+
+    fileobj = open(file_path+"/users.txt", "r")
+    for line in fileobj.readlines():
+        rip = str(line.strip()).split('|')
+
+        CustomUser.objects.create_user(
+            name=rip[1],
+            surname=rip[2],
+            email=rip[3],
+            username=rip[4],
+            password=rip[5],
+        )
+        user = CustomUser.objects.get(username=rip[4])
+        print(f"Usuario {user.username} creado con id: {user.id}")
+
+    fileobj.close()
 
 
 def populateHouses():
@@ -215,18 +241,11 @@ def populateHouses():
             books=str(", ".join(book_titles))
         )
         i += 1
-        # print(f"Casa número {i} creada: {name}")
-
-    # Create dictionary for RS {house_id:house_object}
-    dict = {}
-    for h in House.objects.all():
-        dict[h.id] = h
+        # print(f"Casa número {i} creada: {name}"
 
     # Populate index
     writer1.commit()
     # print("Fin de indexado", "Se han creado " + str(i) + " casas")
-
-    return (dict)
 
 
 def populateBooks():
@@ -316,7 +335,7 @@ def populateCharacters():
         paragraphs = character_page.find('div', class_='mw-parser-output')
         h3 = paragraphs.find_all('h3')
         for h in h3:
-            book_title = h.text.title()
+            book_title = h.text.title().replace('.', '')
             if (book_title != 'Antes De La Saga' and
                book_title != 'Primeros Años' and
                book_title != 'Trasfondo' and
@@ -368,14 +387,24 @@ def populateCharacters():
         i += 1
         # print(f"Personaje número {i} creado: {name}")
 
-    # Create dictionary for RS {house_id:house_object}
-    dict = {}
-    for h in House.objects.all():
-        dict[h.id] = h
-
     # Populate index
     writer2.commit()
     # print("Fin de indexado", "Se han creado " + str(i) + " casas")
     update_progress(462+i, 462+i, "¡Carga completa!")
 
-    return (dict)
+
+def populateRatings(file_path):
+    # Delete tables
+    if Rating.objects.exists():
+        Rating.objects.all().delete()
+
+    u = CustomUser.objects.all()
+    c = Character.objects.all()
+
+    fileobj = open(file_path+"/ratings.txt", "r")
+    for line in fileobj.readlines():
+        rip = str(line.strip()).split('|')
+        rating = Rating.objects.create(userId=u[int(rip[0])], characterId=c[int(rip[1])], rating=int(rip[2]))
+        print(f"Puntuación ({rating.userId}, {rating.characterId}) creado")
+
+    fileobj.close()
