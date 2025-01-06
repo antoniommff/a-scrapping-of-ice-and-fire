@@ -42,12 +42,6 @@ class Character(models.Model):
         return self.name
 
 
-# class UserBook(models.Model):
-#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="user_books")
-#     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-#     completed = models.BooleanField(default=False)
-
-
 class Rating(models.Model):
     RATINGS = ((0, 'No favorito'), (1, 'Me gusta'), (2, 'Guardado'))
     userId = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

@@ -1,2 +1,5 @@
 .venv
+.env
+venv
+env
 .flake8

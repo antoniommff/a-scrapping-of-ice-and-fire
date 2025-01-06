@@ -23,13 +23,13 @@ def sim_distance(prefs, person1, person2):
 
 
 # Returns the Pearson correlation coefficient for p1 and p2
-# esto devuelve un valor entre -1 y 1, siendo 1 muy parecido y -1 nada parecido
+# this returns a value between -1 and 1, with 1 being very similar and -1 being not similar at all
 def sim_pearson(prefs, p1, p2):
     # Get the list of mutually rated items
     si = {}
     for item in prefs[p1]:
         if item in prefs[p2]:
-            si[item] = 1  # clave es la pelicula y se guarda como valor 1 si son iguales
+            si[item] = 1
 
     # if they are no ratings in common, return 0
     if len(si) == 0:
@@ -98,37 +98,6 @@ def getRecommendations(prefs, person, similarity=sim_pearson):
     rankings.sort()
     rankings.reverse()
     return rankings
-
-
-# def getRecommendations2(Prefs, ItemsPrefs, user, similarity=sim_pearson):
-#     totals = {}
-#     simSums = {}
-
-#     for item in ItemsPrefs:
-#         # Si el usuario ya puntuó este ítem, no lo recomendamos
-#         if item in Prefs[user]:
-#             continue  # se vuelve al for
-
-#         # Similaridades entre este ítem y los ítems que el usuario puntuó
-#         for other in Prefs[user]:
-#             sim = similarity(ItemsPrefs, item, other)
-
-#             # Ignorar ítems con similitud <= 0
-#             if sim <= 0:
-#                 continue
-
-#             # Predecir la puntuación del usuario para este ítem
-#             totals.setdefault(item, 0)
-#             totals[item] += Prefs[user][other] * sim
-
-#             # Sumar la similitud
-#             simSums.setdefault(item, 0)
-#             simSums[item] += sim
-
-#     # Normalizar las puntuaciones
-#     rankings = [(total / simSums[item], item) for item, total in totals.items() if simSums[item] != 0]
-#     rankings.sort(reverse=True)  # Ordenar de mayor a menor puntuación predicha
-#     return rankings
 
 
 def transformPrefs(prefs):

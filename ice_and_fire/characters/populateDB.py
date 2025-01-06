@@ -241,11 +241,9 @@ def populateHouses():
             books=str(", ".join(book_titles))
         )
         i += 1
-        # print(f"Casa número {i} creada: {name}"
 
     # Populate index
     writer1.commit()
-    # print("Fin de indexado", "Se han creado " + str(i) + " casas")
 
 
 def populateBooks():
@@ -385,11 +383,10 @@ def populateCharacters():
             books=str(", ".join(book_titles))
         )
         i += 1
-        # print(f"Personaje número {i} creado: {name}")
 
     # Populate index
     writer2.commit()
-    # print("Fin de indexado", "Se han creado " + str(i) + " casas")
+    print("Fin de indexado", "Se han creado " + str(i) + " casas")
     update_progress(462+i, 462+i, "¡Carga completa!")
 
 
