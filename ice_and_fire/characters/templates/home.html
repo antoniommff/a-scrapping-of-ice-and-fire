@@ -2,8 +2,10 @@
 {% load static %}
 
 {% block title %}
-  <title> A Scrapping of Ice and Fire </title>
+    <title> A Scrapping of Ice and Fire </title>
 {% endblock title %}
+
+<link rel="stylesheet" href="{% static 'styles.css' %}">
 
 <head>
     <!-- Required meta tags -->
@@ -59,13 +61,12 @@
             <br><hr>
         </div>
 
-
+        {% if not user.is_authenticated %}
         <div class="col-md-8 col-xl-6 text-center mx-auto">
             <br>
             <h2 style="color: #4e4b4b;"> <strong> Inicia sesión para poder acceder a recomendaciones personalizadas </strong> </h2>
             <br>
         </div>
-        {% if not user.is_authenticated %}
         <div class="mb-3 text-center">
             <div class="d-flex justify-content-center align-items-center gap-2">
             <a class="comic-button-edit" href="{% url 'login' %}">
@@ -172,7 +173,7 @@
     .zoom-image {
         width: 100%;
         height: auto;
-        transition: transform 0.2s ease-out;
+        transition: transform 0.4s ease-out;
         will-change: transform;
         position: relative;
         z-index: 1;

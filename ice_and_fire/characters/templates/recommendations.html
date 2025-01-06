@@ -2,25 +2,559 @@
 {% load static %}
 
 {% block title %}
-    <title>Recomendaciones: para evita spoilres</title>
+    <title>Recomendaciones para evitar spoilers</title>
 {% endblock title %}
 
 {% block content %}
+<section class="py-4 d-flex align-items-center justify-content-center" style="min-height: 50vh;">
+    <div class="container">
+        <div class="row d-flex justify-content-center text-center">
+        
+        <div class="row justify-content-center">
+            <h1 class="mb-4">
+                <strong>RECOMENDACIONES PERSONALIZADAS</strong>
+            </h1>
+            <p class="mb-4">
+                Debido a la inabarcable extensión del mundo de hielo y fuego, a veces puede ser díficil navegar por la ciudadela. Por eso, aquí encontrarás un lugar el que el empezar poco a poco, con <strong> recomendaciones personalizadas de personajes populares </strong>.
+            </p>
+        </div>
 
-    <h1>Recomendaciones para {{ user.username }}</h1>
+        {% if favourites %}
+            <div><br></div>
+            <h3> ✪ Tus favoritos </h3>
+            <hr>
+            <div><br></div>
+            <div class="row justify-content-center">
+                <div class="card-columns">
+                {% for character in favourites %}
+                    <div class="card">
+                        <div class="card-img">
+                            <img src="{{ character.photo }}" 
+                                 alt="Image of {{ character.name }}" 
+                                 class="img-fluid" 
+                                 style="max-width: 150px; max-height: 150px; border-radius: 5%; box-shadow: 0 12 12px rgba(0, 0, 0, 1);">
+                        </div>
+                        <div class="card-title">{{character.name}}</div>
+                        <div class="card-footer d-flex justify-content-center flex-wrap gap-2">
+                            <a class="btn btn-sm mx-1" data-toggle="modal" data-target="#characterModal" onclick="showcharacterInfo('{{ character.name }}', '{{ character.photo }}', '{{ character.books }}', '{{ character.house }}')">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="btn-label">Más Información</span>
+                            </a>
+                            <a href="{{ character.url }}" class="btn btn-sm mx-1" target="_blank">
+                                <i class="fas fa-link" style="vertical-align: middle;"></i>
+                                <span class="btn-label">Enlace a la Wiki</span>
+                            </a>
+                            <a class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites %}btn-liked{% endif %}" onclick="addToLikes('{{ character.id }}')">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span class="btn-label">Me Gusta</span>
+                            </a>
+                            <a class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}" onclick="addToFavorites('{{ character.id }}')">
+                                <i class="fas fa-star"></i>
+                                <span class="btn-label">Favorito</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        {% endif %}
 
-    <h2>Libros Leídos</h2>
-    <ul>
-        {% for book in books %}
-        <li>{{ book.title }}</li>
-        {% endfor %}
-    </ul>
+        <div><br><br><br><br></div>
+        <h3> ⚂ Personajes que podrían interesarte... </h3>
+        <hr>
+        <div><br></div>
+        <div class="row justify-content-center">
+            <div class="card-columns">
+            {% if items is None or items.count == 0 %}
+                <p class="mb-4 alert alert-warning">
+                    <strong> Para consultar recomendaciones personalizadas primero debes puntuar personajes. </strong>
+                </p>
+            {% endif %}
+            {% for character, score in items %}
+            <div class="card">
+                <div class="card-img">
+                    <img src="{{ character.photo }}" 
+                         alt="Image of {{ character.name }}" 
+                         class="img-fluid" 
+                         style="max-width: 150px; max-height: 150px; border-radius: 5%; box-shadow: 0 12 12px rgba(0, 0, 0, 1);">
+                </div>
+                <div class="card-title">{{ character.name }}</div>
+                <div class="card-footer d-flex justify-content-center flex-wrap gap-2">
+                    <a class="btn btn-sm mx-1" data-toggle="modal" data-target="#characterModal" onclick="showcharacterInfo('{{ character.name }}', '{{ character.photo }}', '{{ character.books }}', '{{ character.house }}')">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="btn-label">Más Información</span>
+                    </a>
+                    <a href="{{ character.url }}" class="btn btn-sm mx-1" target="_blank">
+                        <i class="fas fa-link" style="vertical-align: middle;"></i>
+                        <span class="btn-label">Enlace a la Wiki</span>
+                    </a>
+                    <a class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites %}btn-liked{% endif %}" onclick="addToLikes('{{ character.id }}')">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span class="btn-label">Me Gusta</span>
+                    </a>
+                    <a class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}" onclick="addToFavorites('{{ character.id }}')">
+                        <i class="fas fa-star"></i>
+                        <span class="btn-label">Favorito</span>
+                    </a>
+                </div>
+            </div>    
+            {% endfor %}
+            </div>
+        </div>
 
-    <h2>Casas Relacionadas</h2>
-    <ul>
-        {% for house in houses %}
-        <li>{{ house.name }} - Lema: {{ house.words }}</li>
-        {% endfor %}
-    </ul>
+        <div><br><br><br><br></div>
+        <h3> ⚯ Buscar personajes similares </h3>
+        <hr>
+        <div><br></div>
+        <form action="{% url 'recommendations' %}" method="get" class="form-inline my-4 d-flex justify-content-center align-items-center">
+            <select 
+                class="form-control custom-select dropdown mx-3" 
+                name="characters">
+                <option value="" {% if not request.GET.characters %}selected{% endif %}>Selecciona un personaje</option>
+                {% for character in characters %}
+                <option value="{{ character.name }}" {% if character.name == request.GET.characters %}selected{% endif %}>
+                    {{ character.name }}
+                </option>
+                {% endfor %}
+            </select>
+            <button class="comic-button-create btn-sm px-4 ml-3" type="submit">Buscar</button>
+        </form>
+    
+        {% if similar_items %}
+        <h4>Personajes similares a {{ character.name }}:</h4>
+        <div class="row justify-content-center">
+            <div class="card-columns">
+            {% if similar_items is None or similar_items.count == 0 %}
+                <p class="mb-4 alert alert-warning">
+                    <strong> No se encontró ningún personaje similar. </strong>
+                </p>
+            {% endif %}
+            {% for character, similarity in similar_items %}
+            <div class="card">
+                <div class="card-img">
+                    <img src="{{ character.photo }}" 
+                         alt="Image of {{ character.name }}" 
+                         class="img-fluid" 
+                         style="max-width: 150px; max-height: 150px; border-radius: 5%; box-shadow: 0 12 12px rgba(0, 0, 0, 1);">
+                </div>
+                <div class="card-title">{{ character.name }}</div>
+                <div class="card-footer d-flex justify-content-center flex-wrap gap-2">
+                    <a class="btn btn-sm mx-1" data-toggle="modal" data-target="#characterModal" onclick="showcharacterInfo('{{ character.name }}', '{{ character.photo }}', '{{ character.books }}', '{{ character.house }}')">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="btn-label">Más Información</span>
+                    </a>
+                    <a href="{{ character.url }}" class="btn btn-sm mx-1" target="_blank">
+                        <i class="fas fa-link" style="vertical-align: middle;"></i>
+                        <span class="btn-label">Enlace a la Wiki</span>
+                    </a>
+                    <a class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites %}btn-liked{% endif %}" onclick="addToLikes('{{ character.id }}')">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span class="btn-label">Me Gusta</span>
+                    </a>
+                    <a class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}" onclick="addToFavorites('{{ character.id }}')">
+                        <i class="fas fa-star"></i>
+                        <span class="btn-label">Favorito</span>
+                    </a>
+                </div>
+            </div>    
+            {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
-{% endblock content %}
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="characterModal" tabindex="-1" role="dialog" aria-labelledby="characterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content card modal-card">
+            <div class="modal-body">
+                <div id="modalContent"></div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <a class="comic-button-cancel btn-sm px-2 mx-2" data-dismiss="modal" style="font-size: 14px;">Cerrar</a>
+                <a class="comic-button-create btn-sm px-2 mx-2" id="viewHouseButton" style="font-size: 14px;">Ver casa</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showcharacterInfo(name, photo, books, house) {
+        fetch(`/get_character_text/?name=${encodeURIComponent(name)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const modalContent = `
+                <div class="container">
+                    <div class="row align-items-center">
+                        <!-- Foto y nombre a la izquierda -->
+                        <div class="col-md-4 d-flex flex-column align-items-center text-center">
+                            <img src=${photo}
+                                 alt="Image of ${name}" 
+                                 class="img-fluid" 
+                                 style="max-width: 300px; max-height: 300px; border-radius: 5%; box-shadow: 0 12 12px rgba(0, 0, 0, 1);">
+                            <h2 class="text-uppercase"><strong>${name}</strong></h2>
+                        </div>
+
+                        <!-- Datos a la derecha -->
+                        <div class="col-md-8">
+                            <p class="fs-7 text-justify"><em>${data.text || 'No disponible'}</em></p>
+                            <hr>
+                            <p class="fs-7 text-justify"><strong>Libros:</strong></p>
+                            <p class="fs-7 text-justify">${data.books}</p>
+                            <hr>
+                            <p class="fs-7 text-justify"><strong>Familia / Linaje:</strong></p>
+                            <p class="fs-7 text-justify">${data.house}</p>
+                        </div>
+                    </div>
+                </div>
+                `;
+                document.getElementById('modalContent').innerHTML = modalContent;
+
+                const viewHouseButton = document.getElementById('viewHouseButton');
+                if (data.house != "Sin casa reconocida") {
+                    viewHouseButton.href = `/houses?q=${encodeURIComponent(data.house)}`;
+                    viewHouseButton.style.display = 'inline-block';
+                } else {
+                    viewHouseButton.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                document.getElementById('modalContent').innerHTML = '<p class="card-subtitle"><strong>Error al cargar la información de la casa.</strong></p>';
+            });
+    }
+
+
+</script>
+
+
+<style>
+
+    /* Buttons */
+    .btn {
+        outline: 0 !important;
+        border: 2px solid #000 !important;
+        width: auto;
+        height: auto;
+        background-color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        transition: all ease-in-out 0.3s;
+        cursor: pointer;
+        padding: 10px 20px;
+        box-shadow: 4px 4px #000;
+        position: relative;
+    }
+
+    .btn-label {
+        display: none;
+        position: absolute;
+        bottom: -50px;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        white-space: nowrap;
+        background-color: #000;
+        box-shadow: 4px 4px #000;
+    }
+
+    .btn:hover .btn-label {
+        display: block;
+    }
+
+    .btn-liked {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-favorite {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+
+    /* character Card */
+    .card {
+      --font-color: #323232;
+      --font-color-sub: #666;
+      --bg-color: #fff;
+      --main-color: #323232;
+      --main-focus: #2d8cf0;
+      width: 275px;
+      height: 350px;
+      background: var(--bg-color);
+      border: 2px solid var(--main-color);
+      box-shadow: 4px 4px var(--main-color);
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 20px;
+      gap: 10px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      flex: 1 1 calc(25% - 20px);
+      box-sizing: border-box;
+    }
+
+    .card:last-child {
+      justify-content: flex-end;
+    }
+
+    .card-img {
+        /* clear and add new css */
+      transition: all 0.5s;
+      display: flex;
+      justify-content: center;
+    }
+
+    .card-img .img {
+     /* delete */
+      transform: scale(1);
+      position: relative;
+      box-sizing: border-box;
+      width: 100px;
+      height: 100px;
+      border-top-left-radius: 80px 50px;
+      border-top-right-radius: 80px 50px;
+      border: 2px solid black;
+      background-color: #228b22;
+      background-image: linear-gradient(to top,transparent 10px,rgba(0,0,0,0.3) 10px,rgba(0,0,0,0.3) 13px,transparent 13px);
+    }
+
+    .card-img .img::before {
+     /* delete */
+      content: '';
+      position: absolute;
+      width: 65px;
+      height: 110px;
+      margin-left: -32.5px;
+      left: 50%;
+      bottom: -4px;
+      background-repeat: no-repeat;
+      background-image: radial-gradient(ellipse at center,rgba(0,0,0,0.7) 30%,transparent 30%),linear-gradient(to top,transparent 17px,rgba(0,0,0,0.3) 17px,rgba(0,0,0,0.3) 20px,transparent 20px),linear-gradient(to right,black 2px,transparent 2px),linear-gradient(to left,black 2px,transparent 2px),linear-gradient(to top,black 2px,#228b22 2px);
+      background-size: 60% 10%,100% 100%,100% 65%,100% 65%,100% 50%;
+      background-position: center 3px,center bottom,center bottom,center bottom,center bottom;
+      border-radius: 0 0 4px 4px;
+      z-index: 2;
+    }
+
+    .card-img .img::after {
+     /* delete */
+      content: '';
+      position: absolute;
+      box-sizing: border-box;
+      width: 28px;
+      height: 28px;
+      margin-left: -14px;
+      left: 50%;
+      top: -13px;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(80deg,#ffc0cb 45%,transparent 45%),linear-gradient(-175deg,#ffc0cb 45%,transparent 45%),linear-gradient(80deg,rgba(0,0,0,0.2) 51%,rgba(0,0,0,0) 51%),linear-gradient(-175deg,rgba(0,0,0,0.2) 51%,rgba(0,0,0,0) 51%),radial-gradient(circle at center,#ffa6b6 45%,rgba(0,0,0,0.2) 45%,rgba(0,0,0,0.2) 52%,rgba(0,0,0,0) 52%),linear-gradient(45deg,rgba(0,0,0,0) 48%,rgba(0,0,0,0.2) 48%,rgba(0,0,0,0.2) 52%,rgba(0,0,0,0) 52%),linear-gradient(65deg,rgba(0,0,0,0) 48%,rgba(0,0,0,0.2) 48%,rgba(0,0,0,0.2) 52%,rgba(0,0,0,0) 52%),linear-gradient(22deg,rgba(0,0,0,0) 48%,rgba(0,0,0,0.2) 48%,rgba(0,0,0,0.2) 54%,rgba(0,0,0,0) 54%);
+      background-size: 100% 100%,100% 100%,100% 100%,100% 75%,100% 95%,100% 60%;
+      background-position: center center;
+      border-top-left-radius: 120px;
+      border-top-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 70px;
+      border-top: 2px solid black;
+      border-left: 2px solid black;
+      transform: rotate(45deg);
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--font-color);
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--font-color-sub);
+    }
+
+    .card-divider {
+      width: 100%;
+      border: 1px solid var(--main-color);
+      border-radius: 50px;
+    }
+
+    .card-footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+    }
+
+    .card-btn {
+      height: 35px;
+      background: var(--bg-color);
+      border: 2px solid var(--main-color);
+      border-radius: 5px;
+      padding: 0 15px;
+      transition: all 0.3s;
+      box-shadow: 4px 4px var(--main-color);
+      position: relative;
+    }
+
+    .card-btn svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--main-color);
+      transition: all 0.3s;
+    }
+
+    .card-img:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-btn:hover {
+      border: 2px solid var(--main-focus);
+    }
+
+    .card-btn:hover svg {
+      fill: var(--main-focus);
+    }
+
+    .card-btn:hover .btn-label {
+        display: block;
+    }
+
+    .card-btn:active {
+      transform: translateY(3px);
+    }
+
+    .card-columns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    @media (max-width: 1200px) {
+        .card {
+            flex: 1 1 calc(33.33% - 20px);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .card {
+            flex: 1 1 calc(50% - 20px);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .card {
+            flex: 1 1 calc(100% - 20px);
+        }
+    }
+
+
+    /* Info Modal */ 
+    .modal-content.card {
+        --font-color: #323232;
+        --font-color-sub: #666;
+        --bg-color: #fff;
+        --main-color: #323232;
+        --main-focus: #2d8cf0;
+        background-color: var(--bg-color);
+        border: 2px solid var(--main-color);
+        box-shadow: 4px 4px var(--main-color);
+        border-radius: 5px;
+        padding: 20px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .modal-content .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-content .modal-footer {
+        background-color: var(--bg-color);
+    }
+
+    .modal-content .modal-footer .comic-button-cancel {
+        border: 2px solid var(--main-color);
+        box-shadow: 4px 4px var(--main-color);
+        background-color: var(--bg-color);
+        color: var(--main-color);
+        transition: all 0.3s;
+    }
+
+    .modal-content .modal-footer .comic-button-cancel:hover {
+        background-color: var(--main-color);
+        color: var(--bg-color);
+    }
+
+    .modal-content .modal-footer .comic-button-cancel:active {
+        transform: translateY(3px);
+    }
+
+    .modal-content.card.modal-card {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+        --font-color: #323232;
+        --font-color-sub: #666;
+        --bg-color: #fff;
+        --main-color: #323232;
+        --main-focus: #2d8cf0;
+        background-color: var(--bg-color);
+        border: 2px solid var(--main-color);
+        box-shadow: 4px 4px var(--main-color);
+        border-radius: 5px;
+        padding: 20px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .modal-content .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-content .modal-footer {
+        background-color: var(--bg-color);
+    }
+
+    .modal-content .modal-footer .comic-button-cancel {
+        border: 2px solid var(--main-color);
+        box-shadow: 4px 4px var(--main-color);
+        background-color: var(--bg-color);
+        color: var(--main-color);
+        transition: all 0.3s;
+    }
+
+    .modal-content .modal-footer .comic-button-cancel:hover {
+        background-color: var(--main-color);
+        color: var(--bg-color);
+    }
+
+    .modal-content .modal-footer .comic-button-cancel:active {
+        transform: translateY(3px);
+    }
+
+
+</style>
+{% endblock %}

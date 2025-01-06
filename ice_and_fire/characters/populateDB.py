@@ -374,7 +374,7 @@ def populateCharacters():
 
         last_name = name.split()[-1]
         house = House.objects.filter(name__icontains=(" " + last_name))
-        if house and name != "Caminante Blanco":
+        if house and "Caminante" not in name:
             character.house = house[0]
             character.save()
 

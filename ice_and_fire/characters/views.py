@@ -1,13 +1,16 @@
-from django.shortcuts import render
+import shelve
+from django.shortcuts import get_object_or_404, render
+from .recommendations import getRecommendations, transformPrefs, calculateSimilarItems, topMatches
 from .populateDB import populate
 from .progress import get_progress
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from .models import Book, Character, House
+from .models import Book, Character, House, Rating
 from whoosh.index import open_dir
 from whoosh.qparser import MultifieldParser
 from django.http import JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.http import require_POST
 
 HOUSES_PER_PAGE = 24
 CHARACTERS_PER_PAGE = 12
@@ -24,6 +27,9 @@ def home(request):
 @staff_member_required
 @login_required
 def populateDatabase(request):
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Superusers are not allowed to access this view.'}, status=403)
+
     houses = populate()  # Dictionary for RS {house_id:house_object}
     return render(request, 'load.html', {'message': 'Datos cargados con éxito', 'dict': houses})
 
@@ -31,13 +37,20 @@ def populateDatabase(request):
 @staff_member_required
 @login_required
 def get_load_progress(request):
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Superusers are not allowed to access this view.'}, status=403)
+
     progress = get_progress()
     print(progress)
     return JsonResponse(progress)
 
 
+@staff_member_required
 @login_required
 def data(request):
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Superusers are not allowed to access this view.'}, status=403)
+
     return render(request, 'load.html')
 
 
@@ -57,6 +70,20 @@ def books(request):
 # Characters
 
 def characters(request):
+    
+    user = request.user
+    Prefs = {}   # {userid: {itemid: rating}}
+    shelf = shelve.open("dataRS.dat")
+    ratings = Rating.objects.all()
+    for ra in ratings:
+        userid = int(ra.userId.id)
+        itemid = int(ra.characterId.id)
+        rating = int(ra.rating)
+        Prefs.setdefault(userid, {})
+        Prefs[userid][itemid] = rating
+    shelf['Prefs'] = Prefs
+    shelf.close()
+
     query = request.GET.get('q')
     selected_book = request.GET.get('books')
     selected_house = request.GET.get('house')
@@ -80,11 +107,17 @@ def characters(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    if user.is_authenticated and user.id in Prefs:
+        favourites = Character.objects.filter(id__in=Rating.objects.filter(userId=user, rating=2).values_list('characterId', flat=True))
+        liked_characters = Character.objects.filter(id__in=Rating.objects.filter(userId=user, rating=1).values_list('characterId', flat=True))
+
+    print(favourites)
     return render(request, 'characters.html', {
         'page_obj': page_obj,
         'query': query,
         'books': Book.objects.all().order_by('title'),
-        'houses': House.objects.all().order_by('name')
+        'houses': House.objects.all().order_by('name'),
+        'favourites': favourites, 'liked_characters': liked_characters
     })
 
 
@@ -150,27 +183,98 @@ def get_house_text_and_books(request):
     return JsonResponse({'text': house_text, 'books': house_books})
 
 
-# Recommendations
+@require_POST
+@login_required
+def add_to_likes(request):
+    character_id = request.POST.get('character_id')
+    character = get_object_or_404(Character, id=character_id)
+    rating, created = Rating.objects.get_or_create(userId=request.user, characterId=character)
+    rating.rating = 1
+    rating.save()
+    return JsonResponse({'status': 'success'})
 
-# @login_required
-# def mark_book_as_read(request, book_id):
-#     book = Book.objects.get(id=book_id)
-#     user_book, created = UserBook.objects.get_or_create(user=request.user, book=book)
-#     user_book.completed = True
-#     user_book.save()
-#     return redirect('recommendations')
+
+@require_POST
+@login_required
+def add_to_favorites(request):
+    character_id = request.POST.get('character_id')
+    character = get_object_or_404(Character, id=character_id)
+    rating, created = Rating.objects.get_or_create(userId=request.user, characterId=character)
+    rating.rating = 2
+    rating.save()
+    return JsonResponse({'status': 'success'})
 
 
+@login_required
 def recommendations(request):
-    # user_books = UserBook.objects.filter(user=request.user, completed=True)
-    # read_books = [ub.book for ub in user_books]
+    if request.user.is_staff:
+        return JsonResponse({'error': 'Superusers are not allowed to access this view.'}, status=403)
 
-    # recommended_books = Book.objects.exclude(id__in=[book.id for book in read_books])
-    # houses = House.objects.filter(books__in=read_books).distinct()
+    # Function that loads all user ratings for movies into the Prefs dictionary.
+    # Also loads the inverse dictionary.
+    # Serializes the results in dataRS.dat
+    Prefs = {}   # {userid: {itemid: rating}}
+    shelf = shelve.open("dataRS.dat")
+    ratings = Rating.objects.all()
+    for ra in ratings:
+        userid = int(ra.userId.id)
+        itemid = int(ra.characterId.id)
+        rating = int(ra.rating)
+        Prefs.setdefault(userid, {})
+        Prefs[userid][itemid] = rating
+    shelf['Prefs'] = Prefs
+    shelf['ItemsPrefs'] = transformPrefs(Prefs)
+    shelf['SimItems'] = calculateSimilarItems(Prefs, n=10)
+    shelf.close()
 
-    # return render(request, 'recommendations.html', {
-    #     'houses': houses,
-    #     'read_books': read_books,
-    #     'recommended_books': recommended_books,
-    # })
-    return render(request, 'recommendations.html')
+    # Recommend characters to user based on their ratings
+    items = None
+    user = request.user
+
+    if user.is_authenticated and user.id in Prefs:
+        idUsuario = user.id
+        shelf = shelve.open("dataRS.dat")
+        Prefs = shelf['Prefs']
+        shelf.close()
+        recommendations = getRecommendations(Prefs, int(idUsuario))
+        recommended = recommendations[: 3]
+        characters = []
+        ratings = []
+        for re in recommended:
+            characters.append(Character.objects.get(pk=re[1]))
+            ratings.append(re[0])
+        items = zip(characters, ratings)
+
+    # Show similar character to one given
+    character = None
+    similar_items = None
+    selected_character = request.GET.get('characters')
+
+    shelf = shelve.open("dataRS.dat")
+    ItemsPrefs = shelf['ItemsPrefs']
+    shelf.close()
+    characters = Character.objects.filter(id__in=ItemsPrefs.keys())
+    if request.GET.get('characters'):
+        character = get_object_or_404(Character, name=selected_character)
+        characterId = character.id
+
+        similar = topMatches(ItemsPrefs, int(characterId), n=3)
+        characters = []
+        similarity = []
+        for re in similar:
+            characters.append(Character.objects.get(pk=re[1]))
+            similarity.append(re[0])
+        similar_items = zip(characters, similarity)
+
+    # Show users favourites and likes
+    favourites = []
+    liked_characters = []
+    if user.is_authenticated and user.id in Prefs:
+        favourites = Character.objects.filter(id__in=Rating.objects.filter(userId=user, rating=2).values_list('characterId', flat=True))
+        liked_characters = Character.objects.filter(id__in=Rating.objects.filter(userId=user, rating=1).values_list('characterId', flat=True))
+    print(favourites)
+    return render(request, 'recommendations.html', {
+        'items': items, 'user': user,
+        'character': character, 'characters': characters, 'similar_items': similar_items,
+        'favourites': favourites, 'liked_characters': liked_characters
+    })

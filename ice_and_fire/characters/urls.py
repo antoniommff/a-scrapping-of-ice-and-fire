@@ -19,4 +19,6 @@ urlpatterns = [
     path('get_character_text/', views.get_character_text_books_and_house, name='get_character_text'),
 
     path('recommendations', views.recommendations, name='recommendations'),
+    path('add_to_favorites/', views.add_to_favorites, name='add_to_favorites'),
+    path('add_to_likes/', views.add_to_likes, name='add_to_likes'),
 ]

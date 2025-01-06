@@ -49,7 +49,7 @@ class Character(models.Model):
 
 
 class Rating(models.Model):
-    RATINGS = ((0, 'No favorito'), (1, 'Favorito'), (2, 'Guardado'))
+    RATINGS = ((0, 'No favorito'), (1, 'Me gusta'), (2, 'Guardado'))
     userId = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     characterId = models.ForeignKey(Character, on_delete=models.CASCADE)
     rating = models.IntegerField(
