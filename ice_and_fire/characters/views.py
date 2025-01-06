@@ -1,5 +1,5 @@
 import shelve
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from .recommendations import getRecommendations, transformPrefs, calculateSimilarItems, topMatches
 from .populateDB import populate
 from .progress import get_progress
@@ -11,6 +11,8 @@ from whoosh.qparser import MultifieldParser
 from django.http import JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from .forms import FavoriteForm, LikeForm, RemoveFavoriteForm, RemoveLikeForm
 
 HOUSES_PER_PAGE = 24
 CHARACTERS_PER_PAGE = 12
@@ -70,7 +72,7 @@ def books(request):
 # Characters
 
 def characters(request):
-    
+
     user = request.user
     Prefs = {}   # {userid: {itemid: rating}}
     shelf = shelve.open("dataRS.dat")
@@ -87,7 +89,7 @@ def characters(request):
     query = request.GET.get('q')
     selected_book = request.GET.get('books')
     selected_house = request.GET.get('house')
-    character_list = Character.objects.all()
+    character_list = Character.objects.all().order_by('name')
     if query or selected_book or selected_house:
         ix = open_dir("index2")
         with ix.searcher() as searcher:
@@ -102,16 +104,23 @@ def characters(request):
                 character_list = character_list.filter(books__title=selected_book).distinct()
             if selected_house:
                 character_list = character_list.filter(house__name=selected_house).distinct()
+        character_list = character_list.order_by('name')
 
     paginator = Paginator(character_list, CHARACTERS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     if user.is_authenticated and user.id in Prefs:
-        favourites = Character.objects.filter(id__in=Rating.objects.filter(userId=user, rating=2).values_list('characterId', flat=True))
-        liked_characters = Character.objects.filter(id__in=Rating.objects.filter(userId=user, rating=1).values_list('characterId', flat=True))
+        favourites = Character.objects.filter(
+            id__in=Rating.objects.filter(userId=user, rating=2).values_list('characterId', flat=True)
+        )
+        liked_characters = Character.objects.filter(
+            id__in=Rating.objects.filter(userId=user, rating=1).values_list('characterId', flat=True)
+        )
+    else:
+        favourites = []
+        liked_characters = []
 
-    print(favourites)
     return render(request, 'characters.html', {
         'page_obj': page_obj,
         'query': query,
@@ -136,6 +145,67 @@ def get_character_text_books_and_house(request):
             character_books = 'No disponible'
             character_house = 'No disponible'
     return JsonResponse({'text': character_text, 'books': character_books, 'house': character_house})
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def add_to_likes(request):
+    form = LikeForm(request.POST)
+    if form.is_valid():
+        character_id = form.cleaned_data['character_id']
+        character = get_object_or_404(Character, id=character_id)
+        rating, created = Rating.objects.get_or_create(
+            userId=request.user, characterId=character, defaults={'rating': 1}
+        )
+        if not created:
+            rating.rating = 1
+            rating.save()
+    return redirect('characters')
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def add_to_favorites(request):
+    form = FavoriteForm(request.POST)
+    if form.is_valid():
+        character_id = form.cleaned_data['character_id']
+        character = get_object_or_404(Character, id=character_id)
+        rating, created = Rating.objects.get_or_create(
+            userId=request.user, characterId=character, defaults={'rating': 2}
+        )
+        if not created:
+            rating.rating = 2
+            rating.save()
+    return redirect('characters')
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def remove_from_likes(request):
+    form = RemoveLikeForm(request.POST)
+    if form.is_valid():
+        character_id = form.cleaned_data['character_id']
+        character = get_object_or_404(Character, id=character_id)
+        Rating.objects.filter(userId=request.user, characterId=character, rating=1).delete()
+    return redirect('characters')
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def remove_from_favorites(request):
+    form = RemoveFavoriteForm(request.POST)
+    if form.is_valid():
+        character_id = form.cleaned_data['character_id']
+        character = get_object_or_404(Character, id=character_id)
+        rating = Rating.objects.filter(userId=request.user, characterId=character, rating=2).first()
+        if rating:
+            rating.rating = 1
+            rating.save()
+    return redirect('characters')
 
 
 # Houses
@@ -183,27 +253,7 @@ def get_house_text_and_books(request):
     return JsonResponse({'text': house_text, 'books': house_books})
 
 
-@require_POST
-@login_required
-def add_to_likes(request):
-    character_id = request.POST.get('character_id')
-    character = get_object_or_404(Character, id=character_id)
-    rating, created = Rating.objects.get_or_create(userId=request.user, characterId=character)
-    rating.rating = 1
-    rating.save()
-    return JsonResponse({'status': 'success'})
-
-
-@require_POST
-@login_required
-def add_to_favorites(request):
-    character_id = request.POST.get('character_id')
-    character = get_object_or_404(Character, id=character_id)
-    rating, created = Rating.objects.get_or_create(userId=request.user, characterId=character)
-    rating.rating = 2
-    rating.save()
-    return JsonResponse({'status': 'success'})
-
+# Recommendations
 
 @login_required
 def recommendations(request):
@@ -270,9 +320,13 @@ def recommendations(request):
     favourites = []
     liked_characters = []
     if user.is_authenticated and user.id in Prefs:
-        favourites = Character.objects.filter(id__in=Rating.objects.filter(userId=user, rating=2).values_list('characterId', flat=True))
-        liked_characters = Character.objects.filter(id__in=Rating.objects.filter(userId=user, rating=1).values_list('characterId', flat=True))
-    print(favourites)
+        favourites = Character.objects.filter(
+            id__in=Rating.objects.filter(userId=user, rating=2).values_list('characterId', flat=True)
+        )
+        liked_characters = Character.objects.filter(
+            id__in=Rating.objects.filter(userId=user, rating=1).values_list('characterId', flat=True)
+        )
+
     return render(request, 'recommendations.html', {
         'items': items, 'user': user,
         'character': character, 'characters': characters, 'similar_items': similar_items,

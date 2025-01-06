@@ -21,4 +21,6 @@ urlpatterns = [
     path('recommendations', views.recommendations, name='recommendations'),
     path('add_to_favorites/', views.add_to_favorites, name='add_to_favorites'),
     path('add_to_likes/', views.add_to_likes, name='add_to_likes'),
+    path('remove_from_favorites/', views.remove_from_favorites, name='remove_from_favorites'),
+    path('remove_from_likes/', views.remove_from_likes, name='remove_from_likes'),
 ]

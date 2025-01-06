@@ -20,6 +20,7 @@
             </div>
 
             <form action="{% url 'characters' %}" method="get" class="form-inline my-4 d-flex justify-content-center align-items-center">
+                {% csrf_token %}
                 <input 
                     class="form-control search-bar mr-3" 
                     type="search" 
@@ -126,6 +127,7 @@
             <div class="row justify-content-center">
                 <div class="card-columns">
                     {% for character in page_obj %}
+                    {% csrf_token %}
                     <div class="card">
                         <div class="card-img">
                             <img src="{{ character.photo }}" 
@@ -143,14 +145,22 @@
                                 <i class="fas fa-link" style="vertical-align: middle;"></i>
                                 <span class="btn-label">Enlace a la Wiki</span>
                             </a>
-                            <a class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites %}btn-liked{% endif %}" onclick="addToLikes('{{ character.id }}')">
-                                <i class="fas fa-thumbs-up"></i>
-                                <span class="btn-label">Me Gusta</span>
-                            </a>
-                            <a class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}" onclick="addToFavorites('{{ character.id }}')">
-                                <i class="fas fa-star"></i>
-                                <span class="btn-label">Favorito</span>
-                            </a>
+                            <form action="{% if character in liked_characters and not character in favourites %}{% url 'remove_from_likes' %}{% elif character in favourites %}{% else %}{% url 'add_to_likes' %}{% endif %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="character_id" value="{{ character.id }}">
+                                <button type="submit" class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites%}btn-liked{% endif %}">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span class="btn-label">{% if character in liked_characters and not character in favourites %}Quitar Me Gusta{% else %}Me Gusta{% endif %}</span>
+                                </button>
+                            </form>
+                            <form action="{% if character in favourites %}{% url 'remove_from_favorites' %}{% else %}{% url 'add_to_favorites' %}{% endif %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="character_id" value="{{ character.id }}">
+                                <button type="submit" class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}">
+                                    <i class="fas fa-star"></i>
+                                    <span class="btn-label">{% if character in favourites %}Quitar Favoritos{% else %}Favorito{% endif %}</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                     {% endfor %}
@@ -279,6 +289,7 @@
                 document.getElementById('modalContent').innerHTML = '<p class="card-subtitle"><strong>Error al cargar la información de la casa.</strong></p>';
             });
     }
+
 </script>
 
 
