@@ -2,7 +2,7 @@
 import random
 import shutil
 import requests
-
+from .scraping import character_scrapping, house_scrapping
 from users.models import CustomUser
 from .progress import update_progress
 from .models import Character, House, Book, Rating
@@ -30,7 +30,7 @@ def populate():
     from django.core.management import call_command
     call_command('migrate')
 
-    populateUsers(sample_data_path)
+    # populateUsers(sample_data_path)
 
     populateHouses()
     populateBooks()
@@ -42,10 +42,6 @@ def populate():
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
         getattr(ssl, '_create_unverified_context', None)):
     ssl._create_default_https_context = ssl._create_unverified_context
-
-
-def clean_text(element):
-    return " ".join(element.stripped_strings)
 
 
 def extract_house_data():
@@ -132,6 +128,7 @@ def populateUsers(file_path):
         print(f"Usuario {user.username} creado con id: {user.id}")
 
     fileobj.close()
+    print("---¡Se han creado todos los usuarios!---")
 
 
 def populateHouses():
@@ -169,67 +166,15 @@ def populateHouses():
 
     # Scrap house data
     for h in houses:
-        aside = h.find('div', class_='mw-parser-output')
-        aside = aside.find('aside', role="region")
-        if aside is None:
+        if house_scrapping(h, links[i]) is None:
             continue
-
-        name = aside.find('h2')
-        name = name.get_text(strip=True)
-
-        url = links[i]
-
-        coat_tag = aside.find('figure', class_='pi-item pi-image')
-        no_coat = "https://static-00.iconduck.com/assets.00/image-not-found-01-icon-512x512-a8erytww.png"
-        coat = coat_tag.a['href'] if coat_tag else no_coat
-
-        section = aside.find('section', class_='pi-group')
-        words, place, lord, region, founder = None, None, None, None, None
-        if section:
-            data_items = section.find_all('div', class_="pi-item")
-            for item in data_items:
-                label = item.find('h3')
-                value = item.find('div')
-                if label and value:
-                    if label.get_text(strip=True) == 'Lema':
-                        words = value.get_text(strip=True)
-                    elif label.get_text(strip=True) == 'Lugar':
-                        place = value.get_text(strip=True)
-                    elif label.get_text(strip=True) == 'Señor':
-                        lord = value.get_text(strip=True)
-                    elif label.get_text(strip=True) == 'Región':
-                        region = value.get_text(strip=True)
-                    elif label.get_text(strip=True) == 'Fundador':
-                        founder = value.get_text(strip=True)
-
-        paragraphs = h.find('div', class_='mw-parser-output').find_all("p")
-        for p in paragraphs:
-            possible_text = clean_text(p)
-            if possible_text:
-                text = possible_text
-                continue
-
-        reference_list = h.find('div', class_='mw-parser-output')\
-            .find('div', class_='mw-references-wrap')
-        if reference_list is None:
-            continue
-        reference_list = reference_list.find_all('span', class_='reference-text')
-        books = set()
-        book_titles = set()
-        for b in reference_list:
-            book_tag = b.find('a')
-            if book_tag and book_tag.get("title"):
-                book_title = book_tag["title"].title()
-                if book_title in ice_and_fire_books:
-                    book, created = Book.objects.get_or_create(title=book_title)
-                    books.add(book)
-                    book_titles.add(book.title)
+        name, url, coat, words, lord, place, region, founder, text, books = house_scrapping(h, links[i])
 
         # Create house
-        house = House.objects.create(
+        new_house = House.objects.create(
             name=name, url=url, coat=coat, words=words, lord=lord, place=place, region=region, founder=founder
         )
-        house.books.set(books)
+        new_house.books.set(books)
         writer1.add_document(
             name=str(name),
             words=str(words),
@@ -238,12 +183,13 @@ def populateHouses():
             region=str(region),
             founder=str(founder),
             text=str(text),
-            books=str(", ".join(book_titles))
+            books=str(", ".join([book.title for book in books]))
         )
         i += 1
 
     # Populate index
     writer1.commit()
+    print("---¡Se han creado todas las casas!---")
 
 
 def populateBooks():
@@ -289,8 +235,7 @@ def populateBooks():
             ])
         book.save()
 
-    for book in Book.objects.all():
-        print(f"Libro {book.title} creado")
+    print("---¡Se han creado todos los libros!---")
 
 
 def populateCharacters():
@@ -322,47 +267,9 @@ def populateCharacters():
 
     # Scrap character data
     for c in characters:
-        character_page = c[0]
-        name = character_page.find("h1", class_="firstHeading")\
-            .get_text(strip=True)
-
-        url = links[i]
-
-        books = set()
-        book_titles = set()
-        paragraphs = character_page.find('div', class_='mw-parser-output')
-        h3 = paragraphs.find_all('h3')
-        for h in h3:
-            book_title = h.text.title().replace('.', '')
-            if (book_title != 'Antes De La Saga' and
-               book_title != 'Primeros Años' and
-               book_title != 'Trasfondo' and
-               book_title != 'En La Obra' and
-               not (book_title.endswith("Temporada"))):
-                try:
-                    book = Book.objects.get(title=book_title)
-                    books.add(book)
-                    book_titles.add(book.title)
-                except Book.DoesNotExist:
-                    print(f"Libro {book_title} no encontrado en la base de datos.")
-
-        texts = paragraphs.find_all("p")
-        for p in texts:
-            possible_text = clean_text(p)
-            if possible_text:
-                text = possible_text
-                break
-
-        photo_page = c[1]
-        photo = "https://static-00.iconduck.com/assets.00/image-not-found-01-icon-512x512-a8erytww.png"
-        paragraphs = photo_page.find('div', class_='mw-parser-output')
-        infobox = paragraphs.find('table', class_='infobox ib-character')
-        if infobox:
-            infobox_image = infobox.find("td", class_="infobox-image")
-            if infobox_image:
-                img_tag = infobox_image.find("img")
-                if img_tag and 'src' in img_tag.attrs:
-                    photo = "https:" + img_tag['src']
+        if character_scrapping(c, links[i]) is None:
+            continue
+        name, url, text, photo, books, book_titles = character_scrapping(c, links[i])
 
         # Create character
         character = Character.objects.create(
@@ -386,7 +293,8 @@ def populateCharacters():
 
     # Populate index
     writer2.commit()
-    print("Fin de indexado", "Se han creado " + str(i) + " casas")
+    print("---¡Se han creado todos los personajes!---")
+    print("Fin de indexado", "Se han creado " + str(i) + " elementos")
     update_progress(462+i, 462+i, "¡Carga completa!")
 
 
@@ -405,3 +313,4 @@ def populateRatings(file_path):
         print(f"Puntuación ({rating.userId}, {rating.characterId}) creado")
 
     fileobj.close()
+    print("---¡Se han creado todos los ratings!---")
