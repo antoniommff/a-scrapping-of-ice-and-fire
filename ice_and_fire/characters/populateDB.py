@@ -30,7 +30,7 @@ def populate():
     from django.core.management import call_command
     call_command('migrate')
 
-    # populateUsers(sample_data_path)
+    populateUsers(sample_data_path)
 
     populateHouses()
     populateBooks()
