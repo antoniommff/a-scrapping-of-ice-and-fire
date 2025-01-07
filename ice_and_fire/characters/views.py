@@ -161,7 +161,7 @@ def add_to_likes(request):
         if not created:
             rating.rating = 1
             rating.save()
-    return redirect('characters')
+    return redirect(request.META.get('HTTP_REFERER', 'characters'))
 
 
 @csrf_exempt
@@ -178,7 +178,7 @@ def add_to_favorites(request):
         if not created:
             rating.rating = 2
             rating.save()
-    return redirect('characters')
+    return redirect(request.META.get('HTTP_REFERER', 'characters'))
 
 
 @csrf_exempt
@@ -190,7 +190,7 @@ def remove_from_likes(request):
         character_id = form.cleaned_data['character_id']
         character = get_object_or_404(Character, id=character_id)
         Rating.objects.filter(userId=request.user, characterId=character, rating=1).delete()
-    return redirect('characters')
+    return redirect(request.META.get('HTTP_REFERER', 'characters'))
 
 
 @csrf_exempt
@@ -205,7 +205,7 @@ def remove_from_favorites(request):
         if rating:
             rating.rating = 1
             rating.save()
-    return redirect('characters')
+    return redirect(request.META.get('HTTP_REFERER', 'characters'))
 
 
 # Houses
@@ -257,8 +257,6 @@ def get_house_text_and_books(request):
 
 @login_required
 def recommendations(request):
-    if request.user.is_staff:
-        return JsonResponse({'error': 'Superusers are not allowed to access this view.'}, status=403)
 
     # Function that loads all user ratings for movies into the Prefs dictionary.
     # Also loads the inverse dictionary.

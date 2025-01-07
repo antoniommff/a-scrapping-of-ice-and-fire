@@ -44,14 +44,22 @@
                                 <i class="fas fa-link" style="vertical-align: middle;"></i>
                                 <span class="btn-label">Enlace a la Wiki</span>
                             </a>
-                            <a class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites %}btn-liked{% endif %}" onclick="addToLikes('{{ character.id }}')">
-                                <i class="fas fa-thumbs-up"></i>
-                                <span class="btn-label">Me Gusta</span>
-                            </a>
-                            <a class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}" onclick="addToFavorites('{{ character.id }}')">
-                                <i class="fas fa-star"></i>
-                                <span class="btn-label">Favorito</span>
-                            </a>
+                            <form action="{% if character in liked_characters and not character in favourites %}{% url 'remove_from_likes' %}{% elif character in favourites %}{% else %}{% url 'add_to_likes' %}{% endif %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="character_id" value="{{ character.id }}">
+                                <button type="submit" class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites%}btn-liked{% endif %}">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span class="btn-label">{% if character in liked_characters and not character in favourites %}Quitar Me Gusta{% else %}Me Gusta{% endif %}</span>
+                                </button>
+                            </form>
+                            <form action="{% if character in favourites %}{% url 'remove_from_favorites' %}{% else %}{% url 'add_to_favorites' %}{% endif %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="character_id" value="{{ character.id }}">
+                                <button type="submit" class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}">
+                                    <i class="fas fa-star"></i>
+                                    <span class="btn-label">{% if character in favourites %}Quitar Favoritos{% else %}Favorito{% endif %}</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 {% endfor %}
@@ -84,18 +92,22 @@
                         <i class="fas fa-info-circle"></i>
                         <span class="btn-label">Más Información</span>
                     </a>
-                    <a href="{{ character.url }}" class="btn btn-sm mx-1" target="_blank">
-                        <i class="fas fa-link" style="vertical-align: middle;"></i>
-                        <span class="btn-label">Enlace a la Wiki</span>
-                    </a>
-                    <a class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites %}btn-liked{% endif %}" onclick="addToLikes('{{ character.id }}')">
-                        <i class="fas fa-thumbs-up"></i>
-                        <span class="btn-label">Me Gusta</span>
-                    </a>
-                    <a class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}" onclick="addToFavorites('{{ character.id }}')">
-                        <i class="fas fa-star"></i>
-                        <span class="btn-label">Favorito</span>
-                    </a>
+                    <form action="{% if character in liked_characters and not character in favourites %}{% url 'remove_from_likes' %}{% elif character in favourites %}{% else %}{% url 'add_to_likes' %}{% endif %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="character_id" value="{{ character.id }}">
+                        <button type="submit" class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites%}btn-liked{% endif %}">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span class="btn-label">{% if character in liked_characters and not character in favourites %}Quitar Me Gusta{% else %}Me Gusta{% endif %}</span>
+                        </button>
+                    </form>
+                    <form action="{% if character in favourites %}{% url 'remove_from_favorites' %}{% else %}{% url 'add_to_favorites' %}{% endif %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="character_id" value="{{ character.id }}">
+                        <button type="submit" class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}">
+                            <i class="fas fa-star"></i>
+                            <span class="btn-label">{% if character in favourites %}Quitar Favoritos{% else %}Favorito{% endif %}</span>
+                        </button>
+                    </form>
                 </div>
             </div>    
             {% endfor %}
@@ -147,14 +159,22 @@
                         <i class="fas fa-link" style="vertical-align: middle;"></i>
                         <span class="btn-label">Enlace a la Wiki</span>
                     </a>
-                    <a class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites %}btn-liked{% endif %}" onclick="addToLikes('{{ character.id }}')">
-                        <i class="fas fa-thumbs-up"></i>
-                        <span class="btn-label">Me Gusta</span>
-                    </a>
-                    <a class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}" onclick="addToFavorites('{{ character.id }}')">
-                        <i class="fas fa-star"></i>
-                        <span class="btn-label">Favorito</span>
-                    </a>
+                    <form action="{% if character in liked_characters and not character in favourites %}{% url 'remove_from_likes' %}{% elif character in favourites %}{% else %}{% url 'add_to_likes' %}{% endif %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="character_id" value="{{ character.id }}">
+                        <button type="submit" class="btn btn-sm mx-1 {% if character in liked_characters or character in favourites%}btn-liked{% endif %}">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span class="btn-label">{% if character in liked_characters and not character in favourites %}Quitar Me Gusta{% else %}Me Gusta{% endif %}</span>
+                        </button>
+                    </form>
+                    <form action="{% if character in favourites %}{% url 'remove_from_favorites' %}{% else %}{% url 'add_to_favorites' %}{% endif %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="character_id" value="{{ character.id }}">
+                        <button type="submit" class="btn btn-sm mx-1 {% if character in favourites %}btn-favorite{% endif %}">
+                            <i class="fas fa-star"></i>
+                            <span class="btn-label">{% if character in favourites %}Quitar Favoritos{% else %}Favorito{% endif %}</span>
+                        </button>
+                    </form>
                 </div>
             </div>    
             {% endfor %}
@@ -198,7 +218,6 @@
                 const modalContent = `
                 <div class="container">
                     <div class="row align-items-center">
-                        <!-- Foto y nombre a la izquierda -->
                         <div class="col-md-4 d-flex flex-column align-items-center text-center">
                             <img src=${photo}
                                  alt="Image of ${name}" 
@@ -207,7 +226,6 @@
                             <h2 class="text-uppercase"><strong>${name}</strong></h2>
                         </div>
 
-                        <!-- Datos a la derecha -->
                         <div class="col-md-8">
                             <p class="fs-7 text-justify"><em>${data.text || 'No disponible'}</em></p>
                             <hr>

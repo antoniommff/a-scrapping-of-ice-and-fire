@@ -7,17 +7,13 @@
 </p>
 <br>
 <p align="center">
-	<img src="https://img.shields.io/github/license/antoniommff/an-index-of-ice-and-fire?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
 	<img src="https://img.shields.io/github/last-commit/antoniommff/an-index-of-ice-and-fire?style=default&logo=git&logoColor=white&color=0080ff" alt="last-commit">
 	<img src="https://img.shields.io/github/languages/top/antoniommff/an-index-of-ice-and-fire?style=default&color=0080ff" alt="repo-top-language">
 	<img src="https://img.shields.io/github/languages/count/antoniommff/an-index-of-ice-and-fire?style=default&color=0080ff" alt="repo-language-count">
 </p>
-<p align="center"><!-- default option, no dependency badges. -->
-</p>
-<p align="center">
-	<!-- default option, no dependency badges. -->
-</p>
-<br>
+
+
+<br><br>
 
 ## Table of Contents
 
@@ -105,7 +101,7 @@ This project incorporates all the technologies covered in the subject "Intellige
 
 
 ### Project Index
-<details open> <!-- ice_and_fire Submodule -->
+<details open>
 	<summary><b><code>ICE-AND-FIRE</code></b></summary>
 		<blockquote>
 			<table>
@@ -364,7 +360,7 @@ Alternatively, you can download the .zip file of the project and extract it as y
 **2. Install the project dependencies:**
 Fist, navegate to the project directory:
 ```sh
-❯ cdan-index-of-ice-and-fire
+❯ cd an-index-of-ice-and-fire
 ```
 
 There, create and activate a virtual environment where all the dependencies must be installed:
@@ -388,6 +384,7 @@ Using `pip` &nbsp; [<img align="center" src="https://img.shields.io/badge/Pip-37
 **3. Initialize the Django project:**
 **Using `python`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Python-3776AB.svg?style=flat&logo=python&logoColor=white" />](https://www.python.org/)
 ```sh
+❯ cd ice_and_fire
 ❯ python manage.py makemigrations
 ❯ python3 manage.py migrate
 ```
@@ -396,17 +393,18 @@ Using `pip` &nbsp; [<img align="center" src="https://img.shields.io/badge/Pip-37
 
 **4. Create a superuser:**
 ```sh
-❯ cd ice-and-fire
 ❯ python manage.py createsuperuser
 ```
 Follow the prompts to create a user with full administrative privileges. Typically, the following values are used:
 ```sh
+username: admin
 name: Admin
 surname: Admin
 email: example@mail.com
-username: admin
 password: 1234
 ```
+If you see the message "Error: That username is already taken." it means that the admin user is already created and you can skit to the netx step.
+
 If everything is set up correctly, you will be able to log in as an administrator with these credentials when the project is deployed locally.
 
 ### Usage
@@ -414,12 +412,12 @@ Run an-index-of-ice-and-fire using the following command:
 Using `python` &nbsp; [<img align="center" src="https://img.shields.io/badge/Python-3776AB.svg?style=flat&logo=python&logoColor=white" />](https://www.python.org/)
 
 ```sh
-❯ python runserver
+❯ python manage.py runserver
 ```
 
-Afterward, you can access the web application locally via the URL: https://127.0.0.1.
+Afterward, you can access the web application locally via the URL: http://127.0.0.1:8000/.
 <br>
-At this point, all data should be preloaded into the system, and you should encounter no issues accessing the information. However, if you are logged in as an administrator (using the credentials provided earlier), you can reload the system data at: https://127.0.0.1/data.
+At this point, all data should be preloaded into the system, and you should encounter no issues accessing the information. However, if you are logged in as an administrator (using the credentials provided earlier), you can reload the system data at: http://127.0.0.1:8000/data.
 
 For more detailed instructions on how to use the application, please refer to this [YouTube tutorial]().
 

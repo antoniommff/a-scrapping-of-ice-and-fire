@@ -2,4 +2,4 @@
 .env
 venv
 env
-.flake8
+.DS_Store
