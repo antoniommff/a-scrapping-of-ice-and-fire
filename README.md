@@ -36,7 +36,14 @@ The purpose of this project is to demonstrate the application of a set of tools 
 
 The technologies used include ***relational databases***, *scraping* techniques using the ***BeautifulSoup*** library, and *indexed searches* with ***Whoosh***. Additionally, multiple ***Recommendation System*** strategies are implemented to provide a personalized user experience.
 
-Check out this YouTube tutorial for a more detailed overview of this project:
+Check out this [YouTube tutorial](https://youtu.be/gwJhMvPjunE) for a more detailed overview of this project:
+
+<p align="center">
+ 	<a href="https://youtu.be/gwJhMvPjunE">
+ 		<img src="https://img.youtube.com/vi/gwJhMvPjunE/maxresdefault.jpg" alt="An Index of Ice and Fire - Project Overview" width="50%">
+ 	</a>
+</p>
+
 
 ---
 
