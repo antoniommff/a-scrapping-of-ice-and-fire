@@ -38,12 +38,6 @@ The technologies used include ***relational databases***, *scraping* techniques 
 
 Check out this YouTube tutorial for a more detailed overview of this project:
 
-<p align="center">
-	<a href="https://youtu.be/MxcrkjoKgqg?si=JalFOCSqza1kXmFJ">
-		<img src="https://img.youtube.com/vi/MxcrkjoKgqg/0.jpg" alt="An Index of Ice and Fire - Project Overview" width="50%">
-	</a>
-</p>
-
 ---
 
 ## Features
