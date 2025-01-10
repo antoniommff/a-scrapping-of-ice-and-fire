@@ -1,7 +1,7 @@
 <p align="center">
     <img src="ice_and_fire/static/images/logo2.png" align="center" width="30%">
 </p>
-<p align="center"><h1 align="center">AN-INDEX-OF-ICE-AND-FIRE</h1></p>
+<p align="center"><h1 align="center">AN INDEX OF ICE AND FIRE</h1></p>
 <p align="center">
 	<em><code>This project demonstrates intelligent information access through a Django-based web app. It integrates relational databases, scraping with BeautifulSoup, indexed searches with Whoosh, and various recommendation strategies to deliver a comprehensive and personalized index of A Song of Ice and Fire.</code></em>
 </p>
@@ -10,6 +10,9 @@
 	<img src="https://img.shields.io/github/last-commit/antoniommff/an-index-of-ice-and-fire?style=default&logo=git&logoColor=white&color=0080ff" alt="last-commit">
 	<img src="https://img.shields.io/github/languages/top/antoniommff/an-index-of-ice-and-fire?style=default&color=0080ff" alt="repo-top-language">
 	<img src="https://img.shields.io/github/languages/count/antoniommff/an-index-of-ice-and-fire?style=default&color=0080ff" alt="repo-language-count">
+</p>
+<p align="center">
+	<strong> 🤠 ¡GET ACCESS TO A PREVIEW OF THE PROJECT HERE! 👉 https://antoniommff.github.io/an-index-of-ice-and-fire/ 😮 </strong>
 </p>
 
 
