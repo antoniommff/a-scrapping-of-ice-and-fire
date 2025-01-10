@@ -1,1 +1,892 @@
-<h1>Hello World!</h1>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+      crossorigin="anonymous"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/favicon.ico" type="image/png">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+        rel="stylesheet"
+    />
+</head>
+
+
+
+
+<nav class="navbar navbar-expand-md py-3">
+    <div class="container d-flex justify-content-center">
+        <div class="button-container">
+            <a class="button">
+                <svg class="icon" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z"></path>
+                </svg>
+                <span class="button-label">Inicio</span>
+            </a>
+            <a class="button">
+              <svg class="icon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V7l-4-4z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v5h8V3"></path>
+              </svg>
+              <span class="button-label">Cargar</span>
+            </a>
+            <a class="button">
+                <svg class="icon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <span class="button-label">Encontrar</span>
+            </a>
+            <a class="button">
+                <svg class="icon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.5c3.333-2 6.667-2 10-1V5c-3.333-1-6.667-1-10 1-3.333-2-6.667-2-10-1v14.5c3.333-1 6.667-1 10 1z"></path>
+                </svg>
+                <span class="button-label">Recomendar</span>
+            </a>
+            <a class="button">
+              <svg class="icon" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2.5a5.5 5.5 0 0 1 3.096 10.047 9.005 9.005 0 0 1 5.9 8.181.75.75 0 1 1-1.499.044 7.5 7.5 0 0 0-14.993 0 .75.75 0 0 1-1.5-.045 9.005 9.005 0 0 1 5.9-8.18A5.5 5.5 0 0 1 12 2.5ZM8 8a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z"></path>
+                </svg>
+                <span class="button-label">Perfil</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+
+
+
+<section class="py-4 py-xl-5">
+    <div class="container">
+        
+        <div class="col-md-8 col-xl-6 text-center mx-auto">
+            <img src="ice_and_fire/static/images/logo3.png" alt="Logo" class="img-fluid mb-4 zoom-on-hover" style="max-width: 300px; max-height: 300px;">
+            <h1> <strong>EL ÍNDICE DE HIELO Y FUEGO</strong> </h1>
+            <br>
+            <h3 style="color: #4e4b4b;"><em><strong> Encuentra información sobre personajes y casas </strong></em></h3>
+            <h3 style="color: #4e4b4b;"><em><strong> ¡SIN PELIGRO DE SPOILERS! </strong></em></h3>
+            <br><hr>
+        </div>
+
+        <div class="row justify-content-center position-relative" style="height: 600px;">
+            <div class="scroll-container">
+                <div class="book large-book" style="background-image: url('ice_and_fire/media/backgrounds/covers/1_a_game_of_thrones.webp'); background-size: cover;">
+                    <div class="col text-center">
+                        <p>Juego de tronos</p>
+                        <a class="comic-button-create" style="font-size: 12px; padding: 5px 10px;">Buscar Casas</a>
+                        <br><br>
+                        <a class="comic-button-edit" style="font-size: 12px; padding: 5px 10px;">Buscar Personajes</a>
+                    </div>
+                    <div class="cover">
+                        <img src="ice_and_fire/media/covers/1_a_game_of_thrones.webp" alt="Juego de Tronos">
+                    </div>
+                </div>
+                <div class="book large-book" style="background-image: url('ice_and_fire/media/backgrounds/covers/2_a_clash_of_kings.webp'); background-size: cover;">
+                    <div class="col text-center">
+                        <p>Choque de Reyes</p>
+                        <a class="comic-button-create" style="font-size: 12px; padding: 5px 10px;">Buscar Casas</a>
+                        <br><br>
+                        <a class="comic-button-edit" style="font-size: 12px; padding: 5px 10px;">Buscar Personajes</a>
+                    </div>
+                    <div class="cover">
+                        <img src="ice_and_fire/media/covers/2_a_clash_of_kings.webp" alt="Choque de Reyes">
+                    </div>
+                </div>
+                <div class="book large-book" style="background-image: url('ice_and_fire/media/backgrounds/covers/3_a_storm_of_swords.webp'); background-size: cover;">
+                    <div class="col text-center">
+                        <p>Tormenta de Espadas</p>
+                        <a class="comic-button-create" style="font-size: 12px; padding: 5px 10px;">Buscar Casas</a>
+                        <br><br>
+                        <a class="comic-button-edit" style="font-size: 12px; padding: 5px 10px;">Buscar Personajes</a>
+                    </div>
+                    <div class="cover">
+                        <img src="ice_and_fire/media/covers/3_a_storm_of_swords.webp" alt="Tormenta de Espadas">
+                    </div>
+                </div>
+                <div class="book large-book" style="background-image: url('ice_and_fire/media/backgrounds/covers/4_a_feast_for_crows.webp'); background-size: cover;">
+                    <div class="col text-center">
+                        <p>Festín de Cuervos</p>
+                        <a class="comic-button-create" style="font-size: 12px; padding: 5px 10px;">Buscar Casas</a>
+                        <br><br>
+                        <a class="comic-button-edit" style="font-size: 12px; padding: 5px 10px;">Buscar Personajes</a>
+                    </div>
+                    <div class="cover">
+                        <img src="ice_and_fire/media/covers/4_a_feast_for_crows.webp" alt="Festín de Cuervos">
+                    </div>
+                </div>
+                <div class="book large-book" style="background-image: url('ice_and_fire/media/backgrounds/covers/5_a_dance_with_dragons.webp'); background-size: cover;">
+                    <div class="col text-center">
+                        <p>Danza de Dragones</p>
+                        <a class="comic-button-create" style="font-size: 12px; padding: 5px 10px;">Buscar Casas</a>
+                        <br><br>
+                        <a class="comic-button-edit" style="font-size: 12px; padding: 5px 10px;">Buscar Personajes</a>
+                    </div>
+                    <div class="cover">
+                        <img src="ice_and_fire/media/covers/5_a_dance_with_dragons.webp" alt="Danza de Dragones">
+                    </div>
+                </div>
+            </div>
+            <button class="btn" onclick="scrollToStart()" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%);">&#10094;</button>
+            <button class="btn" onclick="scrollRight()" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">&#10095;</button>
+            <br><hr>
+        </div>
+
+        <div class="col-md-8 col-xl-6 text-center mx-auto">
+            <br>
+            <h2 style="color: #4e4b4b;"> <strong> Inicia sesión para poder acceder a recomendaciones personalizadas </strong> </h2>
+            <br>
+        </div>
+        <div class="mb-3 text-center">
+            <div class="d-flex justify-content-center align-items-center gap-2">
+            <a class="comic-button-edit">
+                Iniciar Sesión
+            </a>
+            <br><a>O</a><br>
+            <a class="comic-button-create">
+                Registrarse
+            </a>
+            </div>
+        </div>
+
+    </div>
+    
+</section>
+
+
+<div class="container py-4 py-xl-5">
+    <div class="row mb-5">
+        <div class="col-md-8 col-xl-6 text-center mx-auto">
+            <h1> <strong> ¡EXPLORA EL GRAN MAPA DE PONIENTE! </strong> </h1>
+        </div>
+    </div>
+</div>
+
+<div class="image-container">
+    <img class="zoom-image" src="ice_and_fire/static/images/westeros.webp" alt="Mapa de Poniente">
+</div>
+<div><br><br></div>
+
+
+
+
+<footer class="py-4 mt-5" style="background-color: #ddd7d0;">
+    <hr class="my-3 text-light">
+    <div class="container">
+        <div class="row text-center text-md-start">
+            <!-- Logo and Description -->
+            <div class="col-md-4 mb-3">
+                <img src="ice_and_fire/static/images/logo3.png" alt="Logo" class="img-fluid mb-2" style="max-width: 100px;">
+                <p class="mt-2 text-dark">Explora el universo de hielo y fuego sin miedo a spoilers. Encuentra información sobre personajes, casas y libros de la saga y más.</p>
+            </div>
+    
+            <!-- Navigation Links -->
+            <div class="col-md-4 mb-3">
+                <h5 class="text-uppercase text-dark">Enlaces rápidos</h5>
+                <ul class="list-unstyled">
+                    <li><a class="text-dark text-decoration-none" href="#">Inicio</a></li>
+                    <li><a class="text-dark text-decoration-none" href="#">Cargar</a></li>
+                    <li><a class="text-dark text-decoration-none" href="#">Encontrar</a></li>
+                    <li><a class="text-dark text-decoration-none" href="#">Todos los personajes</a></li>
+                    <li><a class="text-dark text-decoration-none" href="#">Todos los libros</a></li>
+                    <li><a class="text-dark text-decoration-none" href="#">Todas las casas</a></li>
+                    <li><a class="text-dark text-decoration-none" href="#">Recomendar</a></li>
+                    <li><a class="text-dark text-decoration-none" href="#">Perfil</a></li>
+                    <li><a class="text-dark text-decoration-none" href="#">Cerrar sesión</a></li>
+                </ul>
+            </div>
+    
+            <!-- Social Media -->
+            <div class="col-md-4 mb-3 d-flex flex-column align-items-center">
+              <h5 class="text-uppercase text-dark">CONTACTO</h5>
+                <div class="row text-center text-md-start bubble">
+                    <a class="social-link1" href="https://github.com/antoniommff/" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="black" height="1em" viewBox="0 0 496 512">
+                            <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path>
+                        </svg>
+                    </a>
+                    <a class="social-link2" href="https://www.linkedin.com/in/antoniommff/" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="black">
+                            <path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path>
+                        </svg>
+                    </a>
+                    <a class="social-link3" href="https://bento.me/antoniommff" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill="black">
+                            <path d="M502.61,233.32,278.68,9.39a32,32,0,0,0-45.25,0L9.39,233.32a32,32,0,0,0,0,45.25L233.32,502.61a32,32,0,0,0,45.25,0L502.61,278.68A32,32,0,0,0,502.61,233.32ZM256,352a96,96,0,1,1,96-96A96.11,96.11,0,0,1,256,352ZM256,192a64,64,0,1,0,64,64A64.07,64.07,0,0,0,256,192Z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <hr class="my-3 text-light">
+            <div class="text-center">
+                <p class="mb-0"> 2025 × El Índice de Hielo y Fuego </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    document.addEventListener("scroll", function () {
+        const scrollPosition = window.scrollY; // Posición de desplazamiento vertical
+        const windowHeight = window.innerHeight; // Altura de la ventana
+        const totalHeight = document.body.scrollHeight - windowHeight; // Altura total desplazable
+        const halfHeight = totalHeight / 2; // Mitad del scroll total
+        const image = document.querySelector(".zoom-image");
+
+        // Determina el factor de zoom
+        let zoomFactor;
+        if (scrollPosition <= halfHeight) {
+            // Aumenta el zoom hasta la mitad del scroll
+            zoomFactor = 1 + (scrollPosition / halfHeight) * 0.3; // Máximo zoom de 1.5
+        } else {
+            // Reduce el zoom después de la mitad
+            zoomFactor = 1.5 - ((scrollPosition - halfHeight) / halfHeight) * 0.3;
+        }
+
+        // Aplica el zoom a la imagen
+        image.style.transform = `scale(${zoomFactor})`;
+    });
+
+
+    function scrollRight() {
+        document.querySelector('.scroll-container').scrollBy({
+            left: 500,
+            behavior: 'smooth'
+        });
+    }
+    function scrollToStart() {
+        document.querySelector('.scroll-container').scrollTo({
+            left: 0,
+            behavior: 'smooth' 
+        });
+    }
+</script>
+
+<style>
+
+    /* Background */
+    body {
+      background-color: #ddd7d0; 
+    }
+
+
+    header, footer {
+        background-color: #FFD700;
+        color: #000;
+    }
+
+    a {
+        color: #FF0000;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #FFD700;
+    }
+
+    .nav-link.active {
+        text-decoration: underline;
+        font-weight: bold;
+    }
+
+    .zoom-on-hover {
+        transition: transform 0.3s ease;
+    }
+    .zoom-on-hover:hover {
+        transform: scale(1.05);
+    }
+
+    .circular-button {
+        background: linear-gradient(to right, #000000, #ffffff);
+        color: white;
+        border-radius: 50%;
+        padding: 10px 20px;
+        transition: transform 0.3s ease;
+    }
+
+    h1, h2, h3 {
+        font-family: 'Roboto', sans-serif;
+    }
+
+
+    /* Buttons */
+    .comic-button-delete {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+      background-color: #EA5629;
+      border: 2px solid #000;
+      box-shadow: 5px 5px 0px #000;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .comic-button-edit {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+      background-color: #4777DA;
+      border: 2px solid #000;
+      box-shadow: 5px 5px 0px #000;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .comic-button-create {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+      background-color: #118E6C;
+      border: 2px solid #000;
+      box-shadow: 5px 5px 0px #000;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .comic-button-cancel {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+      background-color: #474C50;
+      border: 2px solid #000;
+      box-shadow: 5px 5px 0px #000;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .comic-button-delete:hover {
+      background-color: #fff;
+      color: #EA5629;
+      border: 2px solid #EA5629;
+      box-shadow: 5px 5px 0px #EA5629;
+    }
+    .comic-button-edit:hover {
+      background-color: #fff;
+      color: #4777DA;
+      border: 2px solid #4777DA;
+      box-shadow: 5px 5px 0px #4777DA;
+    }
+    .comic-button-create:hover {
+      background-color: #fff;
+      color: #118E6C;
+      border: 2px solid #118E6C;
+      box-shadow: 5px 5px 0px #118E6C;
+    }
+    .comic-button-cancel:hover {
+      background-color: #fff;
+      color: #474C50;
+      border: 2px solid #474C50;
+      box-shadow: 5px 5px 0px #474C50;
+    }
+    .comic-button:active {
+      background-color: #0000;
+      box-shadow: none;
+      transform: translateY(4px);
+    }
+
+    /* Navbar */
+    .button-container {
+        display: flex;
+        background-color: #118E6C;
+        width: 250px;
+        height: 40px;
+        align-items: center;
+        justify-content: space-around;
+        box-shadow: 5px 5px 0px #000;
+        transition: all 0.5s;
+        position: relative;
+    }
+    .button-container:hover {
+        width: 300px;
+        transition: all 0.5s;
+    }
+    .button {
+        outline: 0 !important;
+        border: 0 !important;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        transition: all ease-in-out 0.3s;
+        cursor: pointer;
+    }
+    .button:hover {
+        transform: translateY(-3px);
+    }
+    .icon {
+        font-size: 20px;
+    }
+    .button-label {
+        display: none;
+        position: absolute;
+        bottom: -50px;
+        background-color: #118E6C;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+    .button:hover .button-label {
+        display: block;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif, bold;
+    }
+    .subtitle {
+        font-family: 'Roboto', sans-serif, bold;
+    }
+    body, p, a, span, div {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+
+
+
+    /* Buttons */
+    .btn {
+        outline: 0 !important;
+        border: 2px solid #000 !important;
+        width: auto;
+        height: auto;
+        background-color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        transition: all ease-in-out 0.3s;
+        cursor: pointer;
+        padding: 10px 20px;
+        box-shadow: 4px 4px #000;
+        position: relative;
+    }
+
+    .btn-label {
+        display: none;
+        position: absolute;
+        bottom: -50px;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        white-space: nowrap;
+        background-color: #000;
+        box-shadow: 4px 4px #000;
+    }
+
+    .btn:hover .btn-label {
+        display: block;
+    }
+
+
+    /* Map */
+    .image-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .zoom-image {
+        width: 100%;
+        height: auto;
+        transition: transform 0.4s ease-out;
+        will-change: transform;
+        position: relative;
+        z-index: 1;
+    }
+
+    .image-container::before,
+    .image-container::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 50px;
+        z-index: 2;
+    }
+
+    .image-container::before {
+        top: 0;
+        background: linear-gradient(to bottom, #ddd7d0, rgba(255, 255, 255, 0));
+    }
+
+    .image-container::after {
+        bottom: 0;
+        background: linear-gradient(to top, #ddd7d0, rgba(255, 255, 255, 0));
+    }
+
+    .zoom-on-hover {
+        transition: transform 0.3s ease;
+    }
+    .zoom-on-hover:hover {
+        transform: scale(1.05);
+    }
+    .custom-carousel-control {
+        width: 5%;
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0);
+        color: transparent;
+        text-align: center;
+        opacity: 0.0;
+        transition: opacity 0.15s ease;
+    }
+
+    .custom-carousel-control:hover {
+        opacity: 1;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-size: 100%, 100%;
+        background-image: none;
+        color: transparent;
+    }
+
+    .carousel-control-prev-icon::after {
+        content: '❮';
+        font-size: 2rem;
+    }
+
+    .carousel-control-next-icon::after {
+        content: '❯';
+        font-size: 2rem;
+    }
+
+    /* Cool book style */ 
+    .book {
+      position: relative;
+      border-radius: 10px;
+      width: 220px;
+      height: 300px;
+      background-color: whitesmoke;
+      -webkit-box-shadow: 1px 1px 12px #000;
+      box-shadow: 1px 1px 12px #000;
+      -webkit-transform: preserve-3d;
+      -ms-transform: preserve-3d;
+      transform: preserve-3d;
+      -webkit-perspective: 2000px;
+      perspective: 2000px;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      color: #000;
+    }
+
+    .cover {
+      top: 0;
+      position: absolute;
+      background-color: lightgray;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      cursor: pointer;
+      -webkit-transition: all 0.5s;
+      transition: all 0.5s;
+      -webkit-transform-origin: 0;
+      -ms-transform-origin: 0;
+      transform-origin: 0;
+      -webkit-box-shadow: 1px 1px 12px #000;
+      box-shadow: 1px 1px 12px #000;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+    }
+
+    .book:hover .cover {
+      -webkit-transition: all 0.5s;
+      transition: all 0.5s;
+      -webkit-transform: rotatey(-80deg);
+      -ms-transform: rotatey(-80deg);
+      transform: rotatey(-80deg);
+    }
+
+    p {
+      font-size: 20px;
+      font-weight: bolder;
+    }
+
+    .scroll-container {
+        display: flex;
+        overflow-x: hidden;
+        gap: 40px;
+        padding: 20px;
+        scroll-behavior: smooth;
+    }
+
+    .large-book {
+        width: 350px;
+        height: 500px;
+        flex: 0 0 auto;
+    }
+
+    .large-book .cover {
+        width: 100%;
+        height: 100%;
+    }
+
+    .large-book .cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+
+    /* Book Card */
+    .card {
+      --font-color: #323232;
+      --font-color-sub: #666;
+      --bg-color: #fff;
+      --main-color: #323232;
+      --main-focus: #2d8cf0;
+      width: 230px;
+      height: 300px;
+      background: var(--bg-color);
+      border: 2px solid var(--main-color);
+      box-shadow: 4px 4px var(--main-color);
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 20px;
+      gap: 10px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      flex: 1 1 calc(25% - 20px);
+      box-sizing: border-box;
+    }
+
+    .card:last-child {
+      justify-content: flex-end;
+    }
+
+    .card-img {
+      transition: all 0.5s;
+      display: flex;
+      justify-content: center;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--font-color);
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--font-color-sub);
+    }
+
+    .card-divider {
+      width: 100%;
+      border: 1px solid var(--main-color);
+      border-radius: 50px;
+    }
+
+    .card-footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+    }
+
+    .card-btn {
+      height: 35px;
+      background: var(--bg-color);
+      border: 2px solid var(--main-color);
+      border-radius: 5px;
+      padding: 0 15px;
+      transition: all 0.3s;
+      box-shadow: 4px 4px var(--main-color);
+      position: relative;
+    }
+
+    .card-btn svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--main-color);
+      transition: all 0.3s;
+    }
+
+    .card-img:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-btn:hover {
+      border: 2px solid var(--main-focus);
+    }
+
+    .card-btn:hover svg {
+      fill: var(--main-focus);
+    }
+
+    .card-btn:hover .btn-label {
+        display: block;
+    }
+
+    .card-btn:active {
+      transform: translateY(3px);
+    }
+
+    .card-columns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        justify-content: center;
+    }
+
+    @media (max-width: 1200px) {
+        .card {
+            flex: 1 1 calc(33.33% - 20px);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .card {
+            flex: 1 1 calc(50% - 20px);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .card {
+            flex: 1 1 calc(100% - 20px);
+        }
+    }
+
+
+  /* Social Media */ 
+  .bubble {
+    display: flex;
+    height: 70px;
+    width: 270px;
+  }
+
+  .bubble svg {
+    position: absolute;
+    display: flex;
+    width: 60%;
+    height: 100%;
+    font-size: 24px;
+    font-weight: 700;
+    opacity: 1;
+    transition: opacity 0.25s;
+    z-index: 2;
+    cursor: pointer;
+  }
+
+  .bubble .social-link1,.bubble .social-link2,.bubble .social-link3,.bubble .social-link4 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25%;
+    color: whitesmoke;
+    font-size: 24px;
+    text-decoration: none;
+    transition: 0.25s;
+    border-radius: 50px;
+  }
+
+  .bubble svg {
+    transform: scale(1);
+  }
+
+  .bubble .social-link1:hover {
+    background-color: #7d4cc1;
+    animation: bounce_613 0.4s linear;
+  }
+
+  .bubble .social-link2:hover {
+    background-color: #187bde;
+    animation: bounce_613 0.4s linear;
+  }
+
+  .bubble .social-link3:hover {
+    background-color: #118E6C;
+    animation: bounce_613 0.4s linear;
+  }
+
+
+  @keyframes bounce_613 {
+    40% {
+      transform: scale(1.4);
+    }
+
+    60% {
+      transform: scale(0.8);
+    }
+
+    80% {
+      transform: scale(1.2);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+</style>
